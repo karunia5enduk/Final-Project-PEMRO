@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/config/database.php';
-$title = 'ElectroEvent Hub - Sistem Informasi Event Jurusan Elektro';
+$title = 'ElectroEvent Hub - Event Jurusan Elektro';
 $events = $pdo->query('SELECT e.*, c.name category_name, (SELECT COUNT(*) FROM registrations r WHERE r.event_id=e.id AND r.status != "rejected") total_reg FROM events e JOIN categories c ON c.id=e.category_id WHERE e.status="open" ORDER BY e.event_date ASC LIMIT 3')->fetchAll();
 $news = $pdo->query('SELECT * FROM news ORDER BY created_at DESC LIMIT 3')->fetchAll();
 require_once __DIR__ . '/includes/header.php';
