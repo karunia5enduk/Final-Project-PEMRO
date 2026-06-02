@@ -10,6 +10,10 @@ require_once __DIR__ . '/includes/header.php';
     <span class="eyebrow">Platform Event Resmi Jurusan Elektro</span>
     <h1>ElectroEvent Hub</h1>
     <p>Sistem informasi event untuk publikasi dan manajemen seminar, workshop, webinar, kompetisi, serta kegiatan organisasi mahasiswa Teknik Elektro dan Teknik Informatika.</p>
+    <div class="hero-countdown-box card" style="display:inline-block; padding:15px 25px; margin-top:20px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); backdrop-filter:blur(10px);">
+    <small style="display:block; color:#8edfff; margin-bottom:5px; font-weight:bold; text-transform:uppercase;">Event Terdekat Dalam:</small>
+    <div id="main-countdown" style="font-size:24px; font-weight:800; color:#fff;">Menghitung...</div>
+</div>
     <div class="actions" style="justify-content:center">
       <a class="btn btn-primary" href="events.php">Lihat Event</a>
       <a class="btn btn-outline" href="register.php">Daftar Member</a>
