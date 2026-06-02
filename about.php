@@ -1,0 +1,6 @@
+<?php $title='About Team'; require_once __DIR__ . '/includes/header.php'; ?>
+<section class="section"><div class="container"><div class="section-head"><div><span class="eyebrow">About Team</span><h2>Kelompok Pengembang</h2><p>Halaman statis anggota kelompok untuk presentasi project.</p></div></div><div class="grid grid-3">
+<?php $team=[['Ahmad Fauzan','Project Manager','2022310001'],['Nurul Hidayah','Frontend Developer','2022310014'],['Bagas Pramudito','Database Designer','2022310022'],['Fitri Ramadhani','UI/UX Designer','2022310031'],['Rian Saputra','Backend Developer','2022310048']]; foreach($team as $t): ?>
+<article class="card"><div class="card-body"><span class="brand-mark" style="margin-bottom:15px"><?= e(substr($t[0],0,1)) ?></span><h3><?= e($t[0]) ?></h3><p class="meta"><?= e($t[1]) ?></p><p>NIM: <?= e($t[2]) ?></p></div></article>
+<?php endforeach; ?></div><div class="card" style="margin-top:24px"><div class="card-body"><h3>Teknologi</h3><p>HTML5, CSS3 murni, Vanilla JavaScript, PHP Native, PDO, MySQL, session login, password_hash, password_verify, dan upload gambar native PHP.</p></div></div></div></section>
+<?php require_once __DIR__ . '/includes/footer.php'; ?>

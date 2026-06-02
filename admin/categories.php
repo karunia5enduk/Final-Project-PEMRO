@@ -1,0 +1,9 @@
+<?php
+require_once __DIR__ . '/../config/database.php'; require_once __DIR__ . '/../includes/functions.php'; require_admin();
+if($_SERVER['REQUEST_METHOD']==='POST'){ if(!empty($_POST['id'])){$stmt=$pdo->prepare('UPDATE categories SET name=?, description=? WHERE id=?');$stmt->execute([$_POST['name'],$_POST['description'],$_POST['id']]);}else{$stmt=$pdo->prepare('INSERT INTO categories (name,description) VALUES (?,?)');$stmt->execute([$_POST['name'],$_POST['description']]);} $_SESSION['flash_success']='Kategori disimpan.'; redirect('admin/categories.php'); }
+if(isset($_GET['delete'])){$stmt=$pdo->prepare('DELETE FROM categories WHERE id=?');$stmt->execute([(int)$_GET['delete']]);redirect('admin/categories.php');}
+$edit=null;if(isset($_GET['edit'])){$stmt=$pdo->prepare('SELECT * FROM categories WHERE id=?');$stmt->execute([(int)$_GET['edit']]);$edit=$stmt->fetch();}
+$categories=$pdo->query('SELECT * FROM categories ORDER BY name')->fetchAll(); $title='Kategori'; require_once __DIR__ . '/_layout.php';
+?>
+<div class="grid grid-2"><form class="card card-body" method="post"><h2><?= $edit?'Edit':'Tambah' ?> Kategori</h2><input type="hidden" name="id" value="<?= e($edit['id']??'') ?>"><div class="form-row"><label class="label">Nama</label><input class="input" name="name" value="<?= e($edit['name']??'') ?>" required></div><div class="form-row"><label class="label">Deskripsi</label><textarea name="description"><?= e($edit['description']??'') ?></textarea></div><button class="btn btn-primary">Simpan</button></form><div class="table-wrap"><table><thead><tr><th>Nama</th><th>Aksi</th></tr></thead><tbody><?php foreach($categories as $c): ?><tr><td><?= e($c['name']) ?></td><td><a href="?edit=<?= $c['id'] ?>">Edit</a> | <a onclick="return confirm('Hapus?')" href="?delete=<?= $c['id'] ?>">Hapus</a></td></tr><?php endforeach; ?></tbody></table></div></div>
+<?php require_once __DIR__ . '/_footer.php'; ?>

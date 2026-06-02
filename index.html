@@ -1,0 +1,3567 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ElectroEvent Hub – Sistem Informasi Event Jurusan Elektro</title>
+  <style>
+    /* =============================================
+       RESET & BASE
+    ============================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:        #0a1628;
+      --navy-light:  #112240;
+      --navy-mid:    #1a3a5c;
+      --blue:        #1565c0;
+      --blue-light:  #1e88e5;
+      --electric:    #00b4d8;
+      --electric2:   #0077b6;
+      --accent:      #00e5ff;
+      --white:       #ffffff;
+      --gray-100:    #f5f7fa;
+      --gray-200:    #e8ecf0;
+      --gray-400:    #9aa5b4;
+      --gray-600:    #5a6a7a;
+      --gray-800:    #2d3748;
+      --success:     #00c853;
+      --warning:     #ff9800;
+      --danger:      #f44336;
+      --info:        #00b4d8;
+      --shadow-sm:   0 2px 8px rgba(0,0,0,.08);
+      --shadow-md:   0 4px 20px rgba(0,0,0,.12);
+      --shadow-lg:   0 8px 40px rgba(0,0,0,.18);
+      --radius:      12px;
+      --radius-lg:   20px;
+      --transition:  all .3s cubic-bezier(.4,0,.2,1);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--gray-100);
+      color: var(--gray-800);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* =============================================
+       UTILITY
+    ============================================= */
+    .hidden { display: none !important; }
+    .flex   { display: flex; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-1 { gap: .25rem; }
+    .gap-2 { gap: .5rem; }
+    .gap-3 { gap: .75rem; }
+    .gap-4 { gap: 1rem; }
+    .text-center { text-align: center; }
+    .text-right  { text-align: right; }
+    .font-bold   { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .w-full { width: 100%; }
+    .relative { position: relative; }
+    .overflow-hidden { overflow: hidden; }
+
+    /* =============================================
+       SCROLLBAR
+    ============================================= */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--gray-100); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+
+    /* =============================================
+       PAGE SYSTEM
+    ============================================= */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* =============================================
+       NAVIGATION
+    ============================================= */
+    #navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: rgba(10,22,40,.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,180,216,.15);
+      padding: 0 2rem;
+      height: 70px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: var(--transition);
+    }
+    #navbar.scrolled {
+      background: rgba(10,22,40,.98);
+      box-shadow: 0 4px 30px rgba(0,0,0,.3);
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: .75rem; cursor: pointer;
+      text-decoration: none;
+    }
+    .nav-logo {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, var(--electric), var(--blue));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; color: white; font-weight: 900;
+      box-shadow: 0 0 20px rgba(0,229,255,.3);
+    }
+    .nav-title { color: white; }
+    .nav-title h1 { font-size: 1.1rem; font-weight: 800; letter-spacing: .5px; }
+    .nav-title span { font-size: .7rem; color: var(--electric); font-weight: 500; letter-spacing: 1px; }
+    .nav-links {
+      display: flex; align-items: center; gap: .25rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: rgba(255,255,255,.8);
+      text-decoration: none;
+      padding: .5rem .9rem;
+      border-radius: 8px;
+      font-size: .875rem;
+      font-weight: 500;
+      transition: var(--transition);
+      cursor: pointer;
+      display: block;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: white;
+      background: rgba(0,229,255,.12);
+    }
+    .nav-links a.active { color: var(--electric); }
+    .nav-actions { display: flex; align-items: center; gap: .75rem; }
+    .btn-login {
+      background: transparent;
+      border: 1.5px solid var(--electric);
+      color: var(--electric);
+      padding: .45rem 1.1rem;
+      border-radius: 8px;
+      font-size: .875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-login:hover {
+      background: var(--electric);
+      color: var(--navy);
+    }
+    .btn-register-nav {
+      background: linear-gradient(135deg, var(--electric), var(--blue));
+      border: none;
+      color: white;
+      padding: .45rem 1.1rem;
+      border-radius: 8px;
+      font-size: .875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 0 15px rgba(0,229,255,.25);
+    }
+    .btn-register-nav:hover { transform: translateY(-1px); box-shadow: 0 0 25px rgba(0,229,255,.4); }
+    .hamburger {
+      display: none;
+      flex-direction: column; gap: 5px;
+      cursor: pointer; padding: .5rem;
+      background: none; border: none;
+    }
+    .hamburger span {
+      display: block; width: 24px; height: 2px;
+      background: white; border-radius: 2px;
+      transition: var(--transition);
+    }
+    .user-menu {
+      display: flex; align-items: center; gap: .75rem;
+      cursor: pointer;
+    }
+    .user-avatar {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--electric), var(--blue));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 700; font-size: .875rem;
+      border: 2px solid rgba(0,229,255,.4);
+    }
+    .user-name { color: white; font-size: .875rem; font-weight: 600; }
+    .dropdown-menu {
+      position: absolute; top: calc(100% + 8px); right: 0;
+      background: var(--navy-light);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: var(--radius);
+      min-width: 180px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      z-index: 1001;
+    }
+    .dropdown-menu a {
+      display: block; padding: .7rem 1rem;
+      color: rgba(255,255,255,.8);
+      text-decoration: none;
+      font-size: .875rem;
+      cursor: pointer;
+      transition: var(--transition);
+      border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .dropdown-menu a:hover { background: rgba(0,229,255,.1); color: white; }
+    .dropdown-menu a.danger { color: var(--danger); }
+    .dropdown-menu a.danger:hover { background: rgba(244,67,54,.1); }
+
+    /* Mobile menu */
+    .mobile-menu {
+      display: none;
+      position: fixed; top: 70px; left: 0; right: 0;
+      background: var(--navy-light);
+      border-bottom: 1px solid rgba(0,180,216,.15);
+      padding: 1rem;
+      z-index: 999;
+      flex-direction: column; gap: .25rem;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      color: rgba(255,255,255,.8);
+      text-decoration: none;
+      padding: .7rem 1rem;
+      border-radius: 8px;
+      font-size: .9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .mobile-menu a:hover { background: rgba(0,229,255,.1); color: white; }
+
+    /* =============================================
+       HERO SECTION
+    ============================================= */
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--navy) 100%);
+      position: relative;
+      display: flex; align-items: center;
+      overflow: hidden;
+      padding-top: 70px;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url('https://images.pexels.com/photos/19199658/pexels-photo-19199658.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200') center/cover;
+      opacity: .08;
+    }
+    .hero-particles {
+      position: absolute; inset: 0; overflow: hidden;
+    }
+    .particle {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: var(--electric);
+      border-radius: 50%;
+      animation: float linear infinite;
+      opacity: .6;
+    }
+    @keyframes float {
+      0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+      10%  { opacity: .6; }
+      90%  { opacity: .6; }
+      100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,180,216,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,180,216,.05) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero-glow {
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,229,255,.1) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { transform: translate(-50%,-50%) scale(1); opacity:.8; } 50% { transform: translate(-50%,-50%) scale(1.2); opacity:.4; } }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      max-width: 1200px; margin: 0 auto;
+      padding: 3rem 2rem;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4rem; align-items: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(0,229,255,.1);
+      border: 1px solid rgba(0,229,255,.3);
+      color: var(--electric);
+      padding: .4rem 1rem;
+      border-radius: 50px;
+      font-size: .8rem; font-weight: 600;
+      letter-spacing: .5px;
+      margin-bottom: 1.5rem;
+      animation: fadeInUp .6s ease;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 8px; height: 8px;
+      background: var(--electric);
+      border-radius: 50%;
+      animation: blink 1.5s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.2; } }
+    .hero-title {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 900;
+      color: white;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+      animation: fadeInUp .7s ease;
+    }
+    .hero-title .gradient-text {
+      background: linear-gradient(135deg, var(--electric), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-desc {
+      color: rgba(255,255,255,.7);
+      font-size: 1.05rem;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+      animation: fadeInUp .8s ease;
+    }
+    .hero-actions {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      animation: fadeInUp .9s ease;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--electric), var(--blue));
+      color: white; border: none;
+      padding: .85rem 2rem;
+      border-radius: var(--radius);
+      font-size: 1rem; font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 0 30px rgba(0,229,255,.3);
+      display: inline-flex; align-items: center; gap: .5rem;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(0,229,255,.5); }
+    .btn-secondary {
+      background: transparent;
+      color: white;
+      border: 2px solid rgba(255,255,255,.3);
+      padding: .85rem 2rem;
+      border-radius: var(--radius);
+      font-size: 1rem; font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex; align-items: center; gap: .5rem;
+    }
+    .btn-secondary:hover { border-color: var(--electric); color: var(--electric); transform: translateY(-2px); }
+    .hero-stats {
+      display: flex; gap: 2rem; margin-top: 2.5rem;
+      animation: fadeInUp 1s ease;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat .num { font-size: 1.8rem; font-weight: 900; color: var(--electric); }
+    .hero-stat .lbl { font-size: .75rem; color: rgba(255,255,255,.6); text-transform: uppercase; letter-spacing: .5px; }
+    .hero-visual {
+      display: flex; flex-direction: column; gap: 1rem;
+      animation: fadeInRight 1s ease;
+    }
+    @keyframes fadeInUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+    @keyframes fadeInRight { from { opacity:0; transform: translateX(40px); } to { opacity:1; transform: translateX(0); } }
+    .hero-card {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+      transition: var(--transition);
+    }
+    .hero-card:hover { transform: translateY(-4px); border-color: rgba(0,229,255,.3); }
+    .event-mini {
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .event-mini-icon {
+      width: 48px; height: 48px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--electric), var(--blue));
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+    }
+    .event-mini-info h4 { color: white; font-size: .9rem; font-weight: 600; margin-bottom: .2rem; }
+    .event-mini-info p { color: var(--electric); font-size: .78rem; }
+    .event-mini-info small { color: rgba(255,255,255,.5); font-size: .72rem; }
+    .hero-countdown {
+      background: rgba(0,229,255,.08);
+      border: 1px solid rgba(0,229,255,.2);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem; text-align: center;
+    }
+    .hero-countdown h4 { color: var(--electric); font-size: .8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: .75rem; }
+    .countdown-row { display: flex; justify-content: center; gap: 1rem; }
+    .countdown-item .count { font-size: 2rem; font-weight: 900; color: white; display: block; }
+    .countdown-item .unit { font-size: .65rem; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .5px; }
+
+    /* =============================================
+       MAIN LAYOUT
+    ============================================= */
+    .main-content { padding-top: 70px; min-height: 100vh; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+    .section { padding: 5rem 0; }
+    .section-header { text-align: center; margin-bottom: 3rem; }
+    .section-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(21,101,192,.1);
+      border: 1px solid rgba(21,101,192,.3);
+      color: var(--blue-light);
+      padding: .35rem .9rem;
+      border-radius: 50px;
+      font-size: .78rem; font-weight: 600;
+      margin-bottom: 1rem;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: .75rem;
+      line-height: 1.25;
+    }
+    .section-subtitle { color: var(--gray-600); font-size: 1rem; max-width: 560px; margin: 0 auto; line-height: 1.7; }
+
+    /* =============================================
+       EVENT CARDS
+    ============================================= */
+    .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+    .event-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .event-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); border-color: var(--blue-light); }
+    .event-card-img {
+      width: 100%; height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+    .event-card-img-placeholder {
+      width: 100%; height: 200px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+    }
+    .event-card-body { padding: 1.25rem; }
+    .event-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .75rem; }
+    .tag {
+      padding: .2rem .65rem;
+      border-radius: 50px;
+      font-size: .72rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+    .tag-elektro   { background: rgba(21,101,192,.1); color: var(--blue); }
+    .tag-informatika { background: rgba(0,180,216,.1); color: var(--electric2); }
+    .tag-seminar   { background: rgba(0,200,83,.1); color: #00a844; }
+    .tag-workshop  { background: rgba(255,152,0,.1); color: #e68900; }
+    .tag-webinar   { background: rgba(156,39,176,.1); color: #7b1fa2; }
+    .tag-kompetisi { background: rgba(244,67,54,.1); color: #d32f2f; }
+    .tag-organisasi { background: rgba(0,188,212,.1); color: #0097a7; }
+    .event-title { font-size: 1.05rem; font-weight: 700; color: var(--navy); margin-bottom: .5rem; line-height: 1.4; }
+    .event-desc { font-size: .85rem; color: var(--gray-600); line-height: 1.6; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .event-meta { display: flex; flex-direction: column; gap: .35rem; font-size: .8rem; color: var(--gray-600); margin-bottom: 1rem; }
+    .event-meta span { display: flex; align-items: center; gap: .4rem; }
+    .event-meta .icon { font-size: .9rem; }
+    .event-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 1rem; border-top: 1px solid var(--gray-200); }
+    .event-seats { font-size: .8rem; color: var(--gray-600); }
+    .event-seats b { color: var(--navy); }
+    .btn-sm {
+      padding: .4rem 1rem;
+      border-radius: 8px;
+      font-size: .8rem; font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      display: inline-flex; align-items: center; gap: .3rem;
+    }
+    .btn-blue { background: var(--blue); color: white; }
+    .btn-blue:hover { background: var(--blue-light); transform: translateY(-1px); }
+    .btn-outline-blue { background: transparent; border: 1.5px solid var(--blue); color: var(--blue); }
+    .btn-outline-blue:hover { background: var(--blue); color: white; }
+    .btn-electric { background: linear-gradient(135deg, var(--electric), var(--blue)); color: white; box-shadow: 0 0 15px rgba(0,180,216,.3); }
+    .btn-electric:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(0,180,216,.5); }
+    .btn-danger-sm { background: var(--danger); color: white; }
+    .btn-danger-sm:hover { background: #d32f2f; }
+    .btn-success-sm { background: var(--success); color: white; }
+    .btn-success-sm:hover { background: #00a844; }
+    .btn-warning-sm { background: var(--warning); color: white; }
+    .btn-warning-sm:hover { background: #e68900; }
+
+    /* Status badge */
+    .status-badge {
+      padding: .2rem .65rem;
+      border-radius: 50px;
+      font-size: .72rem; font-weight: 700;
+    }
+    .status-open    { background: rgba(0,200,83,.12); color: #00a844; }
+    .status-closed  { background: rgba(244,67,54,.12); color: #d32f2f; }
+    .status-ongoing { background: rgba(255,152,0,.12); color: #e68900; }
+    .status-upcoming { background: rgba(21,101,192,.12); color: var(--blue); }
+
+    /* =============================================
+       SEARCH & FILTER
+    ============================================= */
+    .search-filter-bar {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      margin-bottom: 2rem;
+    }
+    .search-row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+    .search-input-wrap {
+      flex: 1; min-width: 220px;
+      position: relative;
+    }
+    .search-input-wrap input {
+      width: 100%;
+      padding: .7rem 1rem .7rem 2.75rem;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      font-size: .9rem;
+      transition: var(--transition);
+      outline: none;
+      background: var(--gray-100);
+      color: var(--gray-800);
+    }
+    .search-input-wrap input:focus { border-color: var(--blue); background: white; }
+    .search-icon {
+      position: absolute; left: .9rem; top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem; color: var(--gray-400);
+    }
+    .filter-select {
+      padding: .7rem 1rem;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      font-size: .875rem;
+      background: var(--gray-100);
+      color: var(--gray-800);
+      cursor: pointer;
+      outline: none;
+      transition: var(--transition);
+      min-width: 160px;
+    }
+    .filter-select:focus { border-color: var(--blue); background: white; }
+
+    /* =============================================
+       NEWS SECTION
+    ============================================= */
+    .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+    .news-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .news-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .news-card-img { width: 100%; height: 180px; object-fit: cover; }
+    .news-card-body { padding: 1.25rem; }
+    .news-date { font-size: .75rem; color: var(--gray-400); margin-bottom: .5rem; display: flex; align-items: center; gap: .3rem; }
+    .news-title { font-size: .95rem; font-weight: 700; color: var(--navy); margin-bottom: .5rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .news-excerpt { font-size: .82rem; color: var(--gray-600); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* =============================================
+       GALLERY
+    ============================================= */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+    .gallery-item {
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 4/3;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+    }
+    .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+    .gallery-item:hover img { transform: scale(1.08); }
+    .gallery-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(10,22,40,.8) 0%, transparent 60%);
+      opacity: 0; transition: var(--transition);
+      display: flex; align-items: flex-end;
+      padding: 1rem;
+    }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+    .gallery-caption { color: white; font-size: .85rem; font-weight: 600; }
+
+    /* =============================================
+       ABOUT TEAM
+    ============================================= */
+    .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; }
+    .team-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      transition: var(--transition);
+    }
+    .team-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); border-color: var(--blue-light); }
+    .team-avatar {
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      object-fit: cover;
+      border: 3px solid var(--blue);
+      box-shadow: 0 0 20px rgba(21,101,192,.2);
+    }
+    .team-avatar-placeholder {
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; color: white; font-weight: 700;
+      border: 3px solid var(--electric);
+      box-shadow: 0 0 20px rgba(0,229,255,.2);
+    }
+    .team-name { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: .25rem; }
+    .team-role { font-size: .8rem; color: var(--blue); font-weight: 600; margin-bottom: .25rem; }
+    .team-nim  { font-size: .75rem; color: var(--gray-400); }
+
+    /* =============================================
+       AUTH PAGES
+    ============================================= */
+    .auth-page {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 2rem;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--navy) 100%);
+      position: relative;
+    }
+    .auth-page::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,180,216,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,180,216,.05) 1px, transparent 1px);
+      background-size: 50px 50px;
+    }
+    .auth-card {
+      background: rgba(255,255,255,.97);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      width: 100%; max-width: 440px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.4);
+      position: relative; z-index: 1;
+      animation: fadeInUp .5s ease;
+    }
+    .auth-logo {
+      text-align: center; margin-bottom: 1.5rem;
+    }
+    .auth-logo-icon {
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, var(--electric), var(--blue));
+      border-radius: 14px;
+      margin: 0 auto .75rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; color: white; font-weight: 900;
+      box-shadow: 0 0 30px rgba(0,229,255,.3);
+    }
+    .auth-logo h2 { font-size: 1.3rem; font-weight: 800; color: var(--navy); }
+    .auth-logo p  { font-size: .8rem; color: var(--gray-400); }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-label { display: block; font-size: .85rem; font-weight: 600; color: var(--gray-800); margin-bottom: .4rem; }
+    .form-control {
+      width: 100%;
+      padding: .75rem 1rem;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      font-size: .9rem;
+      transition: var(--transition);
+      outline: none;
+      color: var(--gray-800);
+      background: var(--gray-100);
+    }
+    .form-control:focus { border-color: var(--blue); background: white; box-shadow: 0 0 0 3px rgba(21,101,192,.1); }
+    .form-control.error { border-color: var(--danger); }
+    .form-error { font-size: .78rem; color: var(--danger); margin-top: .3rem; display: flex; align-items: center; gap: .3rem; }
+    .btn-full { width: 100%; justify-content: center; padding: .85rem; font-size: 1rem; font-weight: 700; border: none; border-radius: var(--radius); cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: .5rem; }
+    .btn-primary-full {
+      background: linear-gradient(135deg, var(--blue), var(--electric));
+      color: white;
+      box-shadow: 0 4px 15px rgba(21,101,192,.3);
+    }
+    .btn-primary-full:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(21,101,192,.4); }
+    .auth-divider { text-align: center; margin: 1.25rem 0; color: var(--gray-400); font-size: .85rem; position: relative; }
+    .auth-divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--gray-200); }
+    .auth-divider span { background: white; padding: 0 .75rem; position: relative; }
+    .auth-link { text-align: center; font-size: .875rem; color: var(--gray-600); }
+    .auth-link a { color: var(--blue); font-weight: 600; cursor: pointer; text-decoration: none; }
+    .auth-link a:hover { color: var(--electric2); }
+    .alert {
+      padding: .85rem 1rem;
+      border-radius: var(--radius);
+      font-size: .875rem;
+      margin-bottom: 1.25rem;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .alert-success { background: rgba(0,200,83,.1); border: 1px solid rgba(0,200,83,.3); color: #00a844; }
+    .alert-error   { background: rgba(244,67,54,.1); border: 1px solid rgba(244,67,54,.3); color: #d32f2f; }
+    .alert-info    { background: rgba(0,180,216,.1); border: 1px solid rgba(0,180,216,.3); color: var(--electric2); }
+
+    /* =============================================
+       ADMIN LAYOUT
+    ============================================= */
+    .admin-wrapper { display: flex; min-height: 100vh; padding-top: 0; }
+    .admin-page { padding-top: 0 !important; background: var(--gray-100); }
+
+    .sidebar {
+      width: 260px; flex-shrink: 0;
+      background: var(--navy);
+      height: 100vh; position: fixed; top: 0; left: 0;
+      display: flex; flex-direction: column;
+      overflow-y: auto;
+      z-index: 900;
+      transition: var(--transition);
+    }
+    .sidebar-logo {
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: flex; align-items: center; gap: .75rem;
+    }
+    .sidebar-logo-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--electric), var(--blue));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; color: white; font-weight: 900;
+      flex-shrink: 0;
+    }
+    .sidebar-logo-text h2 { color: white; font-size: .95rem; font-weight: 800; }
+    .sidebar-logo-text span { color: var(--electric); font-size: .7rem; font-weight: 500; }
+    .sidebar-section { padding: 1rem 1rem .5rem; }
+    .sidebar-section-label { font-size: .65rem; color: rgba(255,255,255,.3); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; padding: 0 .5rem; margin-bottom: .25rem; }
+    .sidebar-nav { list-style: none; }
+    .sidebar-nav li a {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .7rem 1rem;
+      border-radius: 10px;
+      color: rgba(255,255,255,.65);
+      text-decoration: none;
+      font-size: .875rem; font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-bottom: 2px;
+    }
+    .sidebar-nav li a:hover { background: rgba(255,255,255,.08); color: white; }
+    .sidebar-nav li a.active { background: linear-gradient(135deg, rgba(0,229,255,.15), rgba(21,101,192,.15)); color: var(--electric); border: 1px solid rgba(0,229,255,.15); }
+    .sidebar-nav li a .nav-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .sidebar-footer {
+      padding: 1rem;
+      border-top: 1px solid rgba(255,255,255,.08);
+      margin-top: auto;
+    }
+    .sidebar-user {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .75rem; border-radius: 10px;
+      background: rgba(255,255,255,.05);
+    }
+    .sidebar-user-avatar {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--electric), var(--blue));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 700; font-size: .85rem;
+    }
+    .sidebar-user-info .name { color: white; font-size: .85rem; font-weight: 600; }
+    .sidebar-user-info .role { color: var(--electric); font-size: .7rem; }
+
+    .admin-main { margin-left: 260px; flex: 1; min-height: 100vh; }
+    .admin-header {
+      background: white;
+      border-bottom: 1px solid var(--gray-200);
+      padding: 1rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    .admin-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--navy); }
+    .admin-header-right { display: flex; align-items: center; gap: 1rem; }
+    .admin-body { padding: 2rem; }
+    .sidebar-toggle {
+      display: none;
+      background: none; border: none;
+      font-size: 1.3rem; cursor: pointer; color: var(--gray-800);
+    }
+
+    /* =============================================
+       DASHBOARD STATS
+    ============================================= */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+    .stat-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      transition: var(--transition);
+      position: relative; overflow: hidden;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .stat-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    }
+    .stat-card.blue::before   { background: linear-gradient(135deg, var(--blue), var(--electric)); }
+    .stat-card.green::before  { background: linear-gradient(135deg, var(--success), #00e676); }
+    .stat-card.orange::before { background: linear-gradient(135deg, var(--warning), #ffd740); }
+    .stat-card.purple::before { background: linear-gradient(135deg, #7b1fa2, #ba68c8); }
+    .stat-card.red::before    { background: linear-gradient(135deg, var(--danger), #ff5252); }
+    .stat-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+    .stat-icon.blue   { background: rgba(21,101,192,.1); }
+    .stat-icon.green  { background: rgba(0,200,83,.1); }
+    .stat-icon.orange { background: rgba(255,152,0,.1); }
+    .stat-icon.purple { background: rgba(123,31,162,.1); }
+    .stat-icon.red    { background: rgba(244,67,54,.1); }
+    .stat-num { font-size: 2rem; font-weight: 900; color: var(--navy); }
+    .stat-label { font-size: .82rem; color: var(--gray-600); font-weight: 500; }
+    .stat-change { font-size: .75rem; margin-top: .25rem; }
+    .stat-change.up   { color: var(--success); }
+    .stat-change.down { color: var(--danger); }
+
+    /* =============================================
+       TABLES
+    ============================================= */
+    .table-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      overflow: hidden;
+    }
+    .table-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: .75rem;
+    }
+    .table-header h3 { font-size: 1rem; font-weight: 700; color: var(--navy); }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      background: var(--gray-100);
+      padding: .85rem 1.25rem;
+      text-align: left;
+      font-size: .78rem; font-weight: 700;
+      color: var(--gray-600);
+      text-transform: uppercase; letter-spacing: .5px;
+      white-space: nowrap;
+    }
+    td {
+      padding: .9rem 1.25rem;
+      font-size: .875rem;
+      color: var(--gray-800);
+      border-bottom: 1px solid var(--gray-200);
+      white-space: nowrap;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--gray-100); }
+    .table-actions { display: flex; gap: .4rem; }
+
+    /* =============================================
+       FORMS / MODALS
+    ============================================= */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.6);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem;
+      animation: fadeIn .2s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal-box {
+      background: white;
+      border-radius: var(--radius-lg);
+      width: 100%; max-width: 560px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 80px rgba(0,0,0,.4);
+      animation: slideUp .3s ease;
+    }
+    @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+    .modal-box.wide { max-width: 760px; }
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-header h3 { font-size: 1.1rem; font-weight: 700; color: var(--navy); }
+    .modal-close {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--gray-100);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      color: var(--gray-600);
+      transition: var(--transition);
+    }
+    .modal-close:hover { background: var(--danger); color: white; }
+    .modal-body { padding: 1.5rem; }
+    .modal-footer { padding: 1.25rem 1.5rem; border-top: 1px solid var(--gray-200); display: flex; gap: .75rem; justify-content: flex-end; }
+
+    /* =============================================
+       DETAIL PAGE
+    ============================================= */
+    .detail-hero {
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+      padding: 3rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .detail-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: url('https://images.pexels.com/photos/35335985/pexels-photo-35335985.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=1200') center/cover;
+      opacity: .1;
+    }
+    .detail-body { padding: 2.5rem 0; }
+    .detail-grid { display: grid; grid-template-columns: 1fr 340px; gap: 2rem; }
+    .detail-poster {
+      width: 100%; border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      display: block;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+    }
+    .detail-poster-placeholder {
+      width: 100%; border-radius: var(--radius-lg);
+      aspect-ratio: 3/4;
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem;
+    }
+    .info-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      margin-bottom: 1.25rem;
+    }
+    .info-card h3 { font-size: .9rem; font-weight: 700; color: var(--navy); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: .5px; padding-bottom: .75rem; border-bottom: 1px solid var(--gray-200); }
+    .info-row { display: flex; justify-content: space-between; align-items: flex-start; padding: .5rem 0; border-bottom: 1px solid var(--gray-100); font-size: .875rem; gap: .5rem; }
+    .info-row:last-child { border-bottom: none; }
+    .info-row .label { color: var(--gray-600); font-weight: 500; flex-shrink: 0; }
+    .info-row .value { color: var(--navy); font-weight: 600; text-align: right; }
+
+    /* =============================================
+       MEMBER PAGE
+    ============================================= */
+    .member-wrapper { display: grid; grid-template-columns: 260px 1fr; gap: 2rem; padding: 2rem; max-width: 1200px; margin: 0 auto; }
+    .member-sidebar {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      height: fit-content;
+      position: sticky; top: 90px;
+    }
+    .member-profile-avatar {
+      width: 80px; height: 80px;
+      background: linear-gradient(135deg, var(--blue), var(--electric));
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; color: white; font-weight: 700;
+      border: 3px solid var(--electric);
+      box-shadow: 0 0 20px rgba(0,229,255,.2);
+    }
+    .member-profile-name { font-size: 1rem; font-weight: 700; color: var(--navy); text-align: center; }
+    .member-profile-prodi { font-size: .78rem; color: var(--blue); text-align: center; margin-bottom: 1rem; }
+    .member-nav { list-style: none; margin-top: 1rem; }
+    .member-nav li a {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .65rem .9rem;
+      border-radius: 10px;
+      color: var(--gray-600);
+      font-size: .875rem; font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+    .member-nav li a:hover { background: var(--gray-100); color: var(--navy); }
+    .member-nav li a.active { background: rgba(21,101,192,.1); color: var(--blue); }
+    .member-content { min-height: 60vh; }
+
+    /* =============================================
+       COUNTDOWN BOXES
+    ============================================= */
+    .big-countdown {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+    }
+    .big-countdown-item {
+      background: var(--navy);
+      color: white;
+      border-radius: var(--radius);
+      padding: 1rem 1.5rem;
+      text-align: center;
+      min-width: 80px;
+    }
+    .big-countdown-item .num { font-size: 2.5rem; font-weight: 900; line-height: 1; display: block; color: var(--electric); }
+    .big-countdown-item .unit { font-size: .7rem; color: rgba(255,255,255,.6); text-transform: uppercase; letter-spacing: .5px; }
+    .big-countdown-sep { font-size: 2rem; color: var(--navy); font-weight: 900; align-self: center; }
+
+    /* =============================================
+       FOOTER
+    ============================================= */
+    footer {
+      background: var(--navy);
+      color: rgba(255,255,255,.7);
+      padding: 4rem 0 0;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem;
+      max-width: 1200px; margin: 0 auto;
+      padding: 0 1.5rem 3rem;
+    }
+    .footer-brand .logo { display: flex; align-items: center; gap: .75rem; margin-bottom: 1rem; }
+    .footer-brand .logo-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--electric), var(--blue));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; color: white; font-weight: 900;
+    }
+    .footer-brand .logo h3 { color: white; font-size: 1rem; font-weight: 800; }
+    .footer-brand p { font-size: .875rem; line-height: 1.8; }
+    .footer-links h4 { color: white; font-size: .9rem; font-weight: 700; margin-bottom: 1rem; }
+    .footer-links ul { list-style: none; }
+    .footer-links ul li { margin-bottom: .5rem; }
+    .footer-links ul li a { color: rgba(255,255,255,.6); text-decoration: none; font-size: .85rem; cursor: pointer; transition: var(--transition); }
+    .footer-links ul li a:hover { color: var(--electric); }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,.08);
+      padding: 1.25rem 1.5rem;
+      text-align: center;
+      font-size: .8rem;
+    }
+
+    /* =============================================
+       TOASTS
+    ============================================= */
+    .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: .5rem; }
+    .toast {
+      background: white;
+      border-radius: var(--radius);
+      padding: .85rem 1.1rem;
+      box-shadow: var(--shadow-lg);
+      border-left: 4px solid var(--blue);
+      display: flex; align-items: center; gap: .75rem;
+      min-width: 280px; max-width: 360px;
+      animation: slideInRight .3s ease;
+      font-size: .875rem;
+    }
+    @keyframes slideInRight { from { opacity:0; transform:translateX(40px); } to { opacity:1; transform:translateX(0); } }
+    .toast.success { border-color: var(--success); }
+    .toast.error   { border-color: var(--danger); }
+    .toast.info    { border-color: var(--electric); }
+    .toast .toast-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .toast .toast-msg  { flex: 1; color: var(--gray-800); }
+
+    /* =============================================
+       CHIPS / BREADCRUMB
+    ============================================= */
+    .breadcrumb {
+      display: flex; align-items: center; gap: .5rem;
+      font-size: .82rem; color: rgba(255,255,255,.6);
+      margin-bottom: 1rem;
+    }
+    .breadcrumb a { color: var(--electric); cursor: pointer; text-decoration: none; }
+    .breadcrumb span { color: rgba(255,255,255,.4); }
+
+    /* =============================================
+       EMPTY STATE
+    ============================================= */
+    .empty-state {
+      text-align: center; padding: 4rem 2rem;
+      color: var(--gray-400);
+    }
+    .empty-state .icon { font-size: 3.5rem; margin-bottom: 1rem; }
+    .empty-state h3 { font-size: 1.1rem; font-weight: 700; color: var(--gray-600); margin-bottom: .5rem; }
+    .empty-state p  { font-size: .875rem; }
+
+    /* =============================================
+       PROGRESS / SEATS
+    ============================================= */
+    .progress-bar { height: 6px; background: var(--gray-200); border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--blue), var(--electric)); transition: width .6s ease; }
+
+    /* =============================================
+       PROFILE EDIT
+    ============================================= */
+    .profile-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      margin-bottom: 1.5rem;
+    }
+    .profile-card h3 { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 1.5rem; padding-bottom: .75rem; border-bottom: 1px solid var(--gray-200); }
+
+    /* =============================================
+       RESPONSIVE
+    ============================================= */
+    @media (max-width: 1024px) {
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .member-wrapper { grid-template-columns: 1fr; }
+      .member-sidebar { position: static; }
+      .admin-main { margin-left: 0; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-toggle { display: block; }
+    }
+    @media (max-width: 768px) {
+      .nav-links, .nav-actions { display: none; }
+      .hamburger { display: flex; }
+      .hero-content { grid-template-columns: 1fr; }
+      .hero-visual { display: none; }
+      .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .events-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .admin-body { padding: 1rem; }
+      .admin-header { padding: 1rem; }
+    }
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .hero-stats { gap: 1.25rem; }
+      .big-countdown { gap: .5rem; }
+      .big-countdown-item { padding: .75rem 1rem; min-width: 64px; }
+      .big-countdown-item .num { font-size: 1.8rem; }
+    }
+
+    /* =============================================
+       MISC
+    ============================================= */
+    .divider { height: 1px; background: var(--gray-200); margin: 1.5rem 0; }
+    .text-electric { color: var(--electric); }
+    .text-blue { color: var(--blue); }
+    .text-navy { color: var(--navy); }
+    .text-gray { color: var(--gray-600); }
+    .text-sm { font-size: .85rem; }
+    .text-xs { font-size: .75rem; }
+    .bg-white { background: white; }
+    .rounded { border-radius: var(--radius); }
+    .p-4 { padding: 1rem; }
+    .p-6 { padding: 1.5rem; }
+    .mb-4 { margin-bottom: 1rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .chip {
+      display: inline-flex; align-items: center; gap: .3rem;
+      padding: .25rem .65rem;
+      border-radius: 50px;
+      font-size: .72rem; font-weight: 600;
+      background: rgba(21,101,192,.1); color: var(--blue);
+    }
+    .chart-bar-wrap { display: flex; flex-direction: column; gap: .75rem; }
+    .chart-bar-row { display: flex; align-items: center; gap: .75rem; }
+    .chart-bar-label { font-size: .8rem; color: var(--gray-600); min-width: 100px; }
+    .chart-bar-outer { flex: 1; height: 10px; background: var(--gray-200); border-radius: 5px; overflow: hidden; }
+    .chart-bar-inner { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--blue), var(--electric)); }
+    .chart-bar-val { font-size: .78rem; font-weight: 700; color: var(--navy); min-width: 30px; text-align: right; }
+
+    /* Sidebar overlay mobile */
+    .sidebar-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 800;
+    }
+    .sidebar-overlay.show { display: block; }
+
+    /* Back to top */
+    .back-top {
+      position: fixed; bottom: 2rem; left: 2rem;
+      width: 42px; height: 42px;
+      background: var(--blue);
+      color: white; border: none;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow-md);
+      z-index: 500;
+      opacity: 0;
+    }
+    .back-top.show { opacity: 1; }
+    .back-top:hover { background: var(--electric); transform: translateY(-2px); }
+
+    /* Scroll animation */
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* Badge notification */
+    .notif-badge {
+      position: absolute; top: -4px; right: -4px;
+      width: 18px; height: 18px;
+      background: var(--danger);
+      border-radius: 50%;
+      font-size: .65rem; font-weight: 700;
+      color: white;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* =============================================
+       CHART CANVAS
+    ============================================= */
+    .chart-container {
+      position: relative;
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      margin-bottom: 1.25rem;
+    }
+    .chart-container h3 { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+
+<!-- ================================================
+     NAVIGATION
+================================================= -->
+<nav id="navbar">
+  <a class="nav-brand" onclick="navigate('home')">
+    <div class="nav-logo">⚡</div>
+    <div class="nav-title">
+      <h1>ElectroEvent Hub</h1>
+      <span>JURUSAN ELEKTRO</span>
+    </div>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a onclick="navigate('home')" class="active" data-page="home">Beranda</a></li>
+    <li><a onclick="navigate('events')" data-page="events">Event</a></li>
+    <li><a onclick="navigate('news')" data-page="news">Berita</a></li>
+    <li><a onclick="navigate('gallery')" data-page="gallery">Galeri</a></li>
+    <li><a onclick="navigate('about')" data-page="about">Tentang</a></li>
+  </ul>
+  <div class="nav-actions">
+    <div id="navGuest">
+      <button class="btn-login" onclick="navigate('login')">Masuk</button>
+      <button class="btn-register-nav" onclick="navigate('register')">Daftar</button>
+    </div>
+    <div id="navUser" class="hidden relative">
+      <div class="user-menu" onclick="toggleUserMenu()">
+        <div class="user-avatar" id="navAvatar">A</div>
+        <span class="user-name" id="navUserName">Admin</span>
+        <span>▾</span>
+      </div>
+      <div class="dropdown-menu hidden" id="userDropdown">
+        <a onclick="navigate('member'); closeDropdown()">👤 Profil Saya</a>
+        <a onclick="navigate('my-events'); closeDropdown()">📋 Event Saya</a>
+        <a onclick="navigate('admin'); closeDropdown()" id="adminMenuLink" class="hidden">⚙️ Dashboard Admin</a>
+        <a onclick="logout()" class="danger">🚪 Keluar</a>
+      </div>
+    </div>
+  </div>
+  <button class="hamburger" onclick="toggleMobileMenu()" id="hamburgerBtn">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a onclick="navigate('home'); closeMobileMenu()">🏠 Beranda</a>
+  <a onclick="navigate('events'); closeMobileMenu()">📅 Event</a>
+  <a onclick="navigate('news'); closeMobileMenu()">📰 Berita</a>
+  <a onclick="navigate('gallery'); closeMobileMenu()">🖼️ Galeri</a>
+  <a onclick="navigate('about'); closeMobileMenu()">👥 Tentang</a>
+  <a onclick="navigate('login'); closeMobileMenu()" id="mobileLogin">🔑 Masuk</a>
+  <a onclick="navigate('register'); closeMobileMenu()" id="mobileRegister">✍️ Daftar</a>
+</div>
+
+<!-- ================================================
+     PAGE: HOME
+================================================= -->
+<div id="page-home" class="page active">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-particles" id="heroParticles"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <div>
+        <div class="hero-badge">⚡ Platform Event Resmi Jurusan Elektro</div>
+        <h1 class="hero-title">
+          Sistem Informasi<br>
+          <span class="gradient-text">ElectroEvent Hub</span>
+        </h1>
+        <p class="hero-desc">
+          Platform digital terpusat untuk publikasi dan manajemen kegiatan
+          Jurusan Teknik Elektro & Teknik Informatika. Temukan seminar, workshop,
+          kompetisi, dan webinar terbaru langsung di sini.
+        </p>
+        <div class="hero-actions">
+          <button class="btn-primary" onclick="navigate('events')">
+            📅 Lihat Semua Event
+          </button>
+          <button class="btn-secondary" onclick="navigate('register')">
+            ✍️ Daftar Sekarang
+          </button>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="num">48+</div><div class="lbl">Total Event</div></div>
+          <div class="hero-stat"><div class="num">1.2K</div><div class="lbl">Peserta</div></div>
+          <div class="hero-stat"><div class="num">2</div><div class="lbl">Program Studi</div></div>
+          <div class="hero-stat"><div class="num">12</div><div class="lbl">Kategori</div></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-card" id="heroUpcoming">
+          <div class="event-mini">
+            <div class="event-mini-icon">🎯</div>
+            <div class="event-mini-info">
+              <h4>Seminar Nasional IoT 2025</h4>
+              <p>📅 28 Jan 2025 • Aula Gedung A</p>
+              <small>Teknik Elektro</small>
+            </div>
+          </div>
+        </div>
+        <div class="hero-card" id="heroCard2">
+          <div class="event-mini">
+            <div class="event-mini-icon">💻</div>
+            <div class="event-mini-info">
+              <h4>Workshop Machine Learning</h4>
+              <p>📅 5 Feb 2025 • Lab Komputer</p>
+              <small>Teknik Informatika</small>
+            </div>
+          </div>
+        </div>
+        <div class="hero-countdown">
+          <h4>⏳ Hitung Mundur Event Berikutnya</h4>
+          <div class="countdown-row" id="heroCountdown">
+            <div class="countdown-item"><span class="count" id="hcd">05</span><span class="unit">Hari</span></div>
+            <div class="countdown-item"><span class="count" id="hch">12</span><span class="unit">Jam</span></div>
+            <div class="countdown-item"><span class="count" id="hcm">34</span><span class="unit">Menit</span></div>
+            <div class="countdown-item"><span class="count" id="hcs">00</span><span class="unit">Detik</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- UPCOMING EVENTS -->
+  <section class="section" style="background:white;">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-badge">📅 Mendatang</div>
+        <h2 class="section-title">Event Terbaru & Mendatang</h2>
+        <p class="section-subtitle">Jangan lewatkan event-event menarik dari Jurusan Elektro yang segera hadir.</p>
+      </div>
+      <div class="events-grid" id="homeEventGrid"></div>
+      <div style="text-align:center;margin-top:2rem;">
+        <button class="btn-primary" onclick="navigate('events')">Lihat Semua Event →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS SECTION -->
+  <section class="section" style="background:linear-gradient(135deg,var(--navy),var(--navy-mid));">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title" style="color:white;">Jurusan Elektro dalam Angka</h2>
+        <p class="section-subtitle" style="color:rgba(255,255,255,.6);">Aktivitas dan capaian Jurusan Teknik Elektro & Informatika</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.5rem;">
+        <div style="text-align:center;padding:2rem;background:rgba(255,255,255,.06);border-radius:var(--radius-lg);border:1px solid rgba(255,255,255,.1);">
+          <div style="font-size:2.5rem;font-weight:900;color:var(--electric);">150+</div>
+          <div style="color:rgba(255,255,255,.6);font-size:.9rem;margin-top:.25rem;">Mahasiswa Aktif</div>
+        </div>
+        <div style="text-align:center;padding:2rem;background:rgba(255,255,255,.06);border-radius:var(--radius-lg);border:1px solid rgba(255,255,255,.1);">
+          <div style="font-size:2.5rem;font-weight:900;color:var(--electric);">48+</div>
+          <div style="color:rgba(255,255,255,.6);font-size:.9rem;margin-top:.25rem;">Event Diselenggarakan</div>
+        </div>
+        <div style="text-align:center;padding:2rem;background:rgba(255,255,255,.06);border-radius:var(--radius-lg);border:1px solid rgba(255,255,255,.1);">
+          <div style="font-size:2.5rem;font-weight:900;color:var(--electric);">12</div>
+          <div style="color:rgba(255,255,255,.6);font-size:.9rem;margin-top:.25rem;">Dosen Pembimbing</div>
+        </div>
+        <div style="text-align:center;padding:2rem;background:rgba(255,255,255,.06);border-radius:var(--radius-lg);border:1px solid rgba(255,255,255,.1);">
+          <div style="font-size:2.5rem;font-weight:900;color:var(--electric);">5</div>
+          <div style="color:rgba(255,255,255,.6);font-size:.9rem;margin-top:.25rem;">Organisasi Mahasiswa</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWS PREVIEW -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-badge">📰 Berita</div>
+        <h2 class="section-title">Berita & Pengumuman</h2>
+        <p class="section-subtitle">Informasi terkini dari Jurusan Teknik Elektro & Teknik Informatika.</p>
+      </div>
+      <div class="news-grid" id="homeNewsGrid"></div>
+      <div style="text-align:center;margin-top:2rem;">
+        <button class="btn-primary" onclick="navigate('news')">Lihat Semua Berita →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODI SECTION -->
+  <section class="section" style="background:white;">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">🎓 Program Studi</div>
+        <h2 class="section-title">Dua Program Studi Unggulan</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;">
+        <div style="background:linear-gradient(135deg,var(--navy),var(--blue));border-radius:var(--radius-lg);padding:2.5rem;color:white;position:relative;overflow:hidden;">
+          <div style="font-size:3rem;margin-bottom:1rem;">⚡</div>
+          <h3 style="font-size:1.3rem;font-weight:800;margin-bottom:.75rem;">Teknik Elektro</h3>
+          <p style="color:rgba(255,255,255,.75);font-size:.9rem;line-height:1.7;margin-bottom:1.5rem;">Program studi yang mempelajari sistem kelistrikan, elektronika, telekomunikasi, dan sistem kontrol. Menghasilkan insinyur elektro yang siap menghadapi era industri 4.0.</p>
+          <button class="btn-sm btn-electric" onclick="filterProdi('Teknik Elektro'); navigate('events')">Lihat Event Elektro →</button>
+        </div>
+        <div style="background:linear-gradient(135deg,var(--electric2),var(--electric));border-radius:var(--radius-lg);padding:2.5rem;color:white;position:relative;overflow:hidden;">
+          <div style="font-size:3rem;margin-bottom:1rem;">💻</div>
+          <h3 style="font-size:1.3rem;font-weight:800;margin-bottom:.75rem;">Teknik Informatika</h3>
+          <p style="color:rgba(255,255,255,.75);font-size:.9rem;line-height:1.7;margin-bottom:1.5rem;">Program studi yang mempelajari pemrograman, kecerdasan buatan, jaringan komputer, dan pengembangan perangkat lunak. Melahirkan software engineer dan data scientist.</p>
+          <button class="btn-sm" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;" onclick="filterProdi('Teknik Informatika'); navigate('events')">Lihat Event Informatika →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">
+          <div class="logo-icon">⚡</div>
+          <h3>ElectroEvent Hub</h3>
+        </div>
+        <p>Platform resmi sistem informasi event Jurusan Teknik Elektro & Teknik Informatika. Menghubungkan mahasiswa dengan peluang dan kegiatan akademik.</p>
+        <div style="margin-top:1rem;display:flex;gap:.75rem;">
+          <a href="#" style="color:var(--electric);font-size:1.2rem;">📘</a>
+          <a href="#" style="color:var(--electric);font-size:1.2rem;">📸</a>
+          <a href="#" style="color:var(--electric);font-size:1.2rem;">🐦</a>
+          <a href="#" style="color:var(--electric);font-size:1.2rem;">▶️</a>
+        </div>
+      </div>
+      <div class="footer-links">
+        <h4>Menu Utama</h4>
+        <ul>
+          <li><a onclick="navigate('home')">Beranda</a></li>
+          <li><a onclick="navigate('events')">Daftar Event</a></li>
+          <li><a onclick="navigate('news')">Berita</a></li>
+          <li><a onclick="navigate('gallery')">Galeri</a></li>
+          <li><a onclick="navigate('about')">Tentang Kami</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Program Studi</h4>
+        <ul>
+          <li><a onclick="filterProdi('Teknik Elektro'); navigate('events')">Teknik Elektro</a></li>
+          <li><a onclick="filterProdi('Teknik Informatika'); navigate('events')">Teknik Informatika</a></li>
+        </ul>
+        <h4 style="margin-top:1.25rem;">Kategori</h4>
+        <ul>
+          <li><a>Seminar</a></li>
+          <li><a>Workshop</a></li>
+          <li><a>Webinar</a></li>
+          <li><a>Kompetisi</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Kontak</h4>
+        <ul>
+          <li><a>📍 Gedung Jurusan Elektro Lt. 2</a></li>
+          <li><a>📞 (0411) 587-0123</a></li>
+          <li><a>✉️ elektro@kampus.ac.id</a></li>
+          <li><a>🕗 Senin – Jumat: 08.00–16.00</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 <strong>ElectroEvent Hub</strong> – Jurusan Teknik Elektro & Teknik Informatika. Developed by Kelompok 5 | Pemrograman Web Semester 4.</p>
+    </div>
+  </footer>
+</div>
+
+<!-- ================================================
+     PAGE: EVENTS
+================================================= -->
+<div id="page-events" class="page">
+  <div class="main-content">
+    <!-- Page Header -->
+    <div style="background:linear-gradient(135deg,var(--navy),var(--navy-mid));padding:3rem 0 2rem;">
+      <div class="container">
+        <div class="breadcrumb"><a onclick="navigate('home')">Beranda</a><span>›</span>Event</div>
+        <h1 style="color:white;font-size:2rem;font-weight:800;margin-bottom:.5rem;">📅 Daftar Event</h1>
+        <p style="color:rgba(255,255,255,.6);">Semua kegiatan dari Jurusan Teknik Elektro & Informatika</p>
+      </div>
+    </div>
+    <div class="container" style="padding-top:2rem;padding-bottom:3rem;">
+      <!-- Search Filter Bar -->
+      <div class="search-filter-bar fade-in">
+        <div class="search-row">
+          <div class="search-input-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="eventSearch" placeholder="Cari nama event, deskripsi..." oninput="filterEvents()" />
+          </div>
+          <select class="filter-select" id="filterCategory" onchange="filterEvents()">
+            <option value="">Semua Kategori</option>
+            <option value="Seminar">Seminar</option>
+            <option value="Workshop">Workshop</option>
+            <option value="Webinar">Webinar</option>
+            <option value="Kompetisi">Kompetisi</option>
+            <option value="Organisasi">Organisasi</option>
+          </select>
+          <select class="filter-select" id="filterProdi" onchange="filterEvents()">
+            <option value="">Semua Prodi</option>
+            <option value="Teknik Elektro">Teknik Elektro</option>
+            <option value="Teknik Informatika">Teknik Informatika</option>
+          </select>
+          <select class="filter-select" id="filterStatus" onchange="filterEvents()">
+            <option value="">Semua Status</option>
+            <option value="Dibuka">Pendaftaran Dibuka</option>
+            <option value="Segera">Segera Hadir</option>
+            <option value="Selesai">Selesai</option>
+          </select>
+        </div>
+      </div>
+      <!-- Results info -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <p id="eventsResultInfo" style="font-size:.875rem;color:var(--gray-600);">Menampilkan <b>0</b> event</p>
+        <button onclick="resetFilters()" style="background:none;border:none;color:var(--blue);font-size:.85rem;cursor:pointer;font-weight:600;">Reset Filter</button>
+      </div>
+      <div class="events-grid" id="eventsGrid"></div>
+      <div id="eventsEmpty" class="empty-state hidden">
+        <div class="icon">🔍</div>
+        <h3>Event tidak ditemukan</h3>
+        <p>Coba ubah kata kunci atau filter pencarian Anda.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Footer -->
+  <footer>
+    <div class="footer-bottom">
+      <p>© 2025 <strong>ElectroEvent Hub</strong> – Jurusan Teknik Elektro & Teknik Informatika.</p>
+    </div>
+  </footer>
+</div>
+
+<!-- ================================================
+     PAGE: EVENT DETAIL
+================================================= -->
+<div id="page-event-detail" class="page">
+  <div class="main-content" id="eventDetailContent"></div>
+</div>
+
+<!-- ================================================
+     PAGE: NEWS
+================================================= -->
+<div id="page-news" class="page">
+  <div class="main-content">
+    <div style="background:linear-gradient(135deg,var(--navy),var(--navy-mid));padding:3rem 0 2rem;">
+      <div class="container">
+        <div class="breadcrumb"><a onclick="navigate('home')">Beranda</a><span>›</span>Berita</div>
+        <h1 style="color:white;font-size:2rem;font-weight:800;margin-bottom:.5rem;">📰 Berita & Pengumuman</h1>
+        <p style="color:rgba(255,255,255,.6);">Informasi terkini dari Jurusan Elektro</p>
+      </div>
+    </div>
+    <div class="container" style="padding-top:2rem;padding-bottom:3rem;">
+      <div class="search-filter-bar" style="margin-bottom:2rem;">
+        <div class="search-row">
+          <div class="search-input-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="newsSearch" placeholder="Cari berita..." oninput="filterNews()" />
+          </div>
+        </div>
+      </div>
+      <div class="news-grid" id="newsGrid"></div>
+    </div>
+  </div>
+  <footer><div class="footer-bottom"><p>© 2025 ElectroEvent Hub</p></div></footer>
+</div>
+
+<!-- ================================================
+     PAGE: NEWS DETAIL
+================================================= -->
+<div id="page-news-detail" class="page">
+  <div class="main-content" id="newsDetailContent"></div>
+</div>
+
+<!-- ================================================
+     PAGE: GALLERY
+================================================= -->
+<div id="page-gallery" class="page">
+  <div class="main-content">
+    <div style="background:linear-gradient(135deg,var(--navy),var(--navy-mid));padding:3rem 0 2rem;">
+      <div class="container">
+        <div class="breadcrumb"><a onclick="navigate('home')">Beranda</a><span>›</span>Galeri</div>
+        <h1 style="color:white;font-size:2rem;font-weight:800;margin-bottom:.5rem;">🖼️ Galeri Kegiatan</h1>
+        <p style="color:rgba(255,255,255,.6);">Dokumentasi kegiatan Jurusan Teknik Elektro & Informatika</p>
+      </div>
+    </div>
+    <div class="container" style="padding-top:2rem;padding-bottom:3rem;">
+      <!-- Filter gallery -->
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:2rem;" id="galleryFilters">
+        <button class="btn-sm btn-blue active-filter" onclick="filterGallery('')" id="gf-all">Semua</button>
+        <button class="btn-sm btn-outline-blue" onclick="filterGallery('Seminar')" id="gf-seminar">Seminar</button>
+        <button class="btn-sm btn-outline-blue" onclick="filterGallery('Workshop')" id="gf-workshop">Workshop</button>
+        <button class="btn-sm btn-outline-blue" onclick="filterGallery('Kompetisi')" id="gf-kompetisi">Kompetisi</button>
+        <button class="btn-sm btn-outline-blue" onclick="filterGallery('Webinar')" id="gf-webinar">Webinar</button>
+      </div>
+      <div class="gallery-grid" id="galleryGrid"></div>
+    </div>
+  </div>
+  <footer><div class="footer-bottom"><p>© 2025 ElectroEvent Hub</p></div></footer>
+</div>
+
+<!-- ================================================
+     PAGE: ABOUT
+================================================= -->
+<div id="page-about" class="page">
+  <div class="main-content">
+    <div style="background:linear-gradient(135deg,var(--navy),var(--navy-mid));padding:3rem 0 2rem;">
+      <div class="container">
+        <div class="breadcrumb"><a onclick="navigate('home')">Beranda</a><span>›</span>Tentang</div>
+        <h1 style="color:white;font-size:2rem;font-weight:800;margin-bottom:.5rem;">👥 Tentang Kami</h1>
+        <p style="color:rgba(255,255,255,.6);">Tim pengembang ElectroEvent Hub – Kelompok 5</p>
+      </div>
+    </div>
+    <div class="container" style="padding-top:3rem;padding-bottom:3rem;">
+      <!-- About Project -->
+      <div style="background:white;border-radius:var(--radius-lg);padding:2.5rem;box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);margin-bottom:3rem;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center;">
+          <div>
+            <div class="section-badge" style="display:inline-flex;margin-bottom:1rem;">ℹ️ Tentang Project</div>
+            <h2 style="font-size:1.6rem;font-weight:800;color:var(--navy);margin-bottom:1rem;">ElectroEvent Hub</h2>
+            <p style="color:var(--gray-600);line-height:1.8;margin-bottom:1rem;">ElectroEvent Hub adalah sistem informasi event berbasis web yang dikembangkan untuk memfasilitasi publikasi dan manajemen kegiatan Jurusan Teknik Elektro dan Teknik Informatika.</p>
+            <p style="color:var(--gray-600);line-height:1.8;margin-bottom:1.5rem;">Platform ini memungkinkan mahasiswa untuk mendaftar event, mendapatkan informasi terbaru, serta memudahkan admin dalam mengelola seluruh kegiatan jurusan secara digital.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:.5rem;">
+              <span class="chip">🛠️ PHP Native</span>
+              <span class="chip">🗄️ MySQL</span>
+              <span class="chip">🎨 CSS3 Pure</span>
+              <span class="chip">⚡ Vanilla JS</span>
+              <span class="chip">🌐 HTML5</span>
+            </div>
+          </div>
+          <div>
+            <img src="https://images.pexels.com/photos/8199625/pexels-photo-8199625.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="Tim Kerja" style="width:100%;border-radius:var(--radius-lg);object-fit:cover;height:280px;" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Team Members -->
+      <div class="section-header fade-in">
+        <div class="section-badge">👤 Tim Developer</div>
+        <h2 class="section-title">Anggota Kelompok 5</h2>
+        <p class="section-subtitle">Mata Kuliah Pemrograman Web – Semester 4 Jurusan Teknik Informatika</p>
+      </div>
+      <div class="team-grid" id="teamGrid"></div>
+
+      <!-- Tech Stack -->
+      <div style="background:var(--navy);border-radius:var(--radius-lg);padding:2.5rem;margin-top:3rem;text-align:center;">
+        <h3 style="color:white;font-size:1.3rem;font-weight:800;margin-bottom:.75rem;">Teknologi yang Digunakan</h3>
+        <p style="color:rgba(255,255,255,.6);margin-bottom:2rem;">Dibangun dengan teknologi web fundamental tanpa framework apapun</p>
+        <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:1.5rem;">
+          <div style="text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:.4rem;">🌐</div>
+            <div style="color:white;font-weight:700;font-size:.85rem;">HTML5</div>
+            <div style="color:rgba(255,255,255,.4);font-size:.72rem;">Struktur</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:.4rem;">🎨</div>
+            <div style="color:white;font-weight:700;font-size:.85rem;">CSS3</div>
+            <div style="color:rgba(255,255,255,.4);font-size:.72rem;">Tampilan</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:.4rem;">⚡</div>
+            <div style="color:white;font-weight:700;font-size:.85rem;">JavaScript</div>
+            <div style="color:rgba(255,255,255,.4);font-size:.72rem;">Interaktivitas</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:.4rem;">🐘</div>
+            <div style="color:white;font-weight:700;font-size:.85rem;">PHP Native</div>
+            <div style="color:rgba(255,255,255,.4);font-size:.72rem;">Backend</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:.4rem;">🗄️</div>
+            <div style="color:white;font-weight:700;font-size:.85rem;">MySQL</div>
+            <div style="color:rgba(255,255,255,.4);font-size:.72rem;">Database</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Database Schema Visual -->
+      <div style="background:white;border-radius:var(--radius-lg);padding:2.5rem;box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);margin-top:2rem;">
+        <h3 style="color:var(--navy);font-size:1.1rem;font-weight:800;margin-bottom:1.5rem;">🗄️ Skema Database</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;">
+          <div style="border:2px solid var(--blue);border-radius:10px;overflow:hidden;">
+            <div style="background:var(--blue);color:white;padding:.5rem .75rem;font-size:.8rem;font-weight:700;">📋 users</div>
+            <div style="padding:.5rem .75rem;font-size:.72rem;color:var(--gray-600);line-height:2;">id_user (PK)<br>nama<br>email<br>password<br>prodi<br>nim<br>role<br>foto<br>created_at</div>
+          </div>
+          <div style="border:2px solid var(--electric2);border-radius:10px;overflow:hidden;">
+            <div style="background:var(--electric2);color:white;padding:.5rem .75rem;font-size:.8rem;font-weight:700;">🏷️ categories</div>
+            <div style="padding:.5rem .75rem;font-size:.72rem;color:var(--gray-600);line-height:2;">id_kategori (PK)<br>nama_kategori<br>deskripsi<br>icon<br>created_at</div>
+          </div>
+          <div style="border:2px solid var(--electric);border-radius:10px;overflow:hidden;">
+            <div style="background:var(--electric);color:var(--navy);padding:.5rem .75rem;font-size:.8rem;font-weight:700;">📅 events</div>
+            <div style="padding:.5rem .75rem;font-size:.72rem;color:var(--gray-600);line-height:2;">id_event (PK)<br>judul<br>deskripsi<br>id_kategori (FK)<br>prodi<br>tanggal<br>lokasi<br>kuota<br>poster<br>status</div>
+          </div>
+          <div style="border:2px solid #7b1fa2;border-radius:10px;overflow:hidden;">
+            <div style="background:#7b1fa2;color:white;padding:.5rem .75rem;font-size:.8rem;font-weight:700;">📝 registrations</div>
+            <div style="padding:.5rem .75rem;font-size:.72rem;color:var(--gray-600);line-height:2;">id_registrasi (PK)<br>id_user (FK)<br>id_event (FK)<br>status<br>tgl_daftar<br>keterangan</div>
+          </div>
+          <div style="border:2px solid #e68900;border-radius:10px;overflow:hidden;">
+            <div style="background:#e68900;color:white;padding:.5rem .75rem;font-size:.8rem;font-weight:700;">📰 news</div>
+            <div style="padding:.5rem .75rem;font-size:.72rem;color:var(--gray-600);line-height:2;">id_berita (PK)<br>judul<br>konten<br>gambar<br>id_user (FK)<br>published_at</div>
+          </div>
+          <div style="border:2px solid #00a844;border-radius:10px;overflow:hidden;">
+            <div style="background:#00a844;color:white;padding:.5rem .75rem;font-size:.8rem;font-weight:700;">🖼️ gallery</div>
+            <div style="padding:.5rem .75rem;font-size:.72rem;color:var(--gray-600);line-height:2;">id_galeri (PK)<br>judul<br>gambar<br>id_event (FK)<br>kategori<br>uploaded_at</div>
+          </div>
+        </div>
+        <div style="margin-top:1.25rem;padding:1rem;background:var(--gray-100);border-radius:var(--radius);font-size:.8rem;color:var(--gray-600);font-family:monospace;">
+          <b>Relasi FK:</b> events.id_kategori → categories.id_kategori | registrations.id_user → users.id_user | registrations.id_event → events.id_event | news.id_user → users.id_user | gallery.id_event → events.id_event
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer><div class="footer-bottom"><p>© 2025 ElectroEvent Hub – Kelompok 5</p></div></footer>
+</div>
+
+<!-- ================================================
+     PAGE: LOGIN
+================================================= -->
+<div id="page-login" class="page">
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">⚡</div>
+        <h2>ElectroEvent Hub</h2>
+        <p>Masuk ke akun Anda</p>
+      </div>
+      <div id="loginAlert"></div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" id="loginEmail" placeholder="email@kampus.ac.id" />
+        <div class="form-error hidden" id="loginEmailErr">⚠️ Email tidak valid</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="relative">
+          <input type="password" class="form-control" id="loginPass" placeholder="Masukkan password" />
+        </div>
+        <div class="form-error hidden" id="loginPassErr">⚠️ Password minimal 6 karakter</div>
+      </div>
+      <button class="btn-full btn-primary-full" onclick="doLogin()">
+        🔑 Masuk
+      </button>
+      <div class="auth-divider"><span>atau</span></div>
+      <div class="auth-link">Belum punya akun? <a onclick="navigate('register')">Daftar sekarang</a></div>
+      <div style="margin-top:1.25rem;padding:1rem;background:rgba(21,101,192,.06);border-radius:10px;font-size:.78rem;color:var(--gray-600);">
+        <b>Demo Akun:</b><br>
+        🔴 Admin: admin@elektro.id / admin123<br>
+        🔵 Member: mahasiswa@elektro.id / user123
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================
+     PAGE: REGISTER
+================================================= -->
+<div id="page-register" class="page">
+  <div class="auth-page">
+    <div class="auth-card" style="max-width:500px;">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">⚡</div>
+        <h2>Buat Akun Baru</h2>
+        <p>Bergabung dengan ElectroEvent Hub</p>
+      </div>
+      <div id="registerAlert"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="form-group">
+          <label class="form-label">Nama Lengkap</label>
+          <input type="text" class="form-control" id="regNama" placeholder="Nama Anda" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">NIM</label>
+          <input type="text" class="form-control" id="regNim" placeholder="2024XXXXX" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" id="regEmail" placeholder="email@kampus.ac.id" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Program Studi</label>
+        <select class="form-control" id="regProdi">
+          <option value="">Pilih Program Studi</option>
+          <option value="Teknik Elektro">Teknik Elektro</option>
+          <option value="Teknik Informatika">Teknik Informatika</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" id="regPass" placeholder="Min. 6 karakter" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Konfirmasi Password</label>
+          <input type="password" class="form-control" id="regPass2" placeholder="Ulangi password" />
+        </div>
+      </div>
+      <button class="btn-full btn-primary-full" onclick="doRegister()">✍️ Daftar Sekarang</button>
+      <div class="auth-divider"><span>atau</span></div>
+      <div class="auth-link">Sudah punya akun? <a onclick="navigate('login')">Masuk di sini</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================
+     PAGE: MEMBER
+================================================= -->
+<div id="page-member" class="page">
+  <div class="main-content">
+    <div style="background:linear-gradient(135deg,var(--navy),var(--navy-mid));padding:2.5rem 0 1.5rem;">
+      <div class="container">
+        <h1 style="color:white;font-size:1.5rem;font-weight:800;">👤 Halaman Member</h1>
+        <p style="color:rgba(255,255,255,.6);">Kelola akun dan event Anda</p>
+      </div>
+    </div>
+    <div class="member-wrapper">
+      <!-- Sidebar -->
+      <div class="member-sidebar">
+        <div class="member-profile-avatar" id="memberAvatar">M</div>
+        <div class="member-profile-name" id="memberName">Loading...</div>
+        <div class="member-profile-prodi" id="memberProdi">Teknik Informatika</div>
+        <ul class="member-nav">
+          <li><a class="active" onclick="showMemberSection('profile')">👤 Profil Saya</a></li>
+          <li><a onclick="showMemberSection('my-events')">📋 Event Saya</a></li>
+          <li><a onclick="showMemberSection('browse-events')">🔍 Temukan Event</a></li>
+          <li><a onclick="navigate('home')">🏠 Kembali ke Beranda</a></li>
+          <li><a onclick="logout()" style="color:var(--danger);">🚪 Keluar</a></li>
+        </ul>
+      </div>
+      <!-- Content -->
+      <div class="member-content" id="memberContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================
+     PAGE: MY EVENTS
+================================================= -->
+<div id="page-my-events" class="page">
+  <div class="main-content">
+    <div style="background:linear-gradient(135deg,var(--navy),var(--navy-mid));padding:2.5rem 0 1.5rem;">
+      <div class="container"><h1 style="color:white;font-size:1.5rem;font-weight:800;">📋 Event Saya</h1></div>
+    </div>
+    <div class="container" style="padding:2rem 1.5rem;">
+      <div id="myEventsGrid" class="events-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================
+     PAGE: ADMIN
+================================================= -->
+<div id="page-admin" class="page admin-page">
+  <!-- Sidebar overlay mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+  <!-- Sidebar -->
+  <div class="sidebar" id="adminSidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">⚡</div>
+      <div class="sidebar-logo-text">
+        <h2>ElectroEvent Hub</h2>
+        <span>Admin Panel</span>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Utama</div>
+      <ul class="sidebar-nav">
+        <li><a class="active" onclick="showAdminSection('dashboard')" id="sn-dashboard"><span class="nav-icon">📊</span> Dashboard</a></li>
+        <li><a onclick="showAdminSection('events-admin')" id="sn-events-admin"><span class="nav-icon">📅</span> Kelola Event</a></li>
+        <li><a onclick="showAdminSection('categories-admin')" id="sn-categories-admin"><span class="nav-icon">🏷️</span> Kelola Kategori</a></li>
+        <li><a onclick="showAdminSection('registrations-admin')" id="sn-registrations-admin"><span class="nav-icon">📝</span> Peserta Event</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Konten</div>
+      <ul class="sidebar-nav">
+        <li><a onclick="showAdminSection('news-admin')" id="sn-news-admin"><span class="nav-icon">📰</span> Kelola Berita</a></li>
+        <li><a onclick="showAdminSection('gallery-admin')" id="sn-gallery-admin"><span class="nav-icon">🖼️</span> Kelola Galeri</a></li>
+        <li><a onclick="showAdminSection('users-admin')" id="sn-users-admin"><span class="nav-icon">👥</span> Kelola User</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Aksi</div>
+      <ul class="sidebar-nav">
+        <li><a onclick="navigate('home')"><span class="nav-icon">🏠</span> Lihat Website</a></li>
+        <li><a onclick="logout()" style="color:#ff7070;"><span class="nav-icon">🚪</span> Keluar</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-user-avatar" id="sidebarAvatar">A</div>
+        <div class="sidebar-user-info">
+          <div class="name" id="sidebarName">Administrator</div>
+          <div class="role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Main -->
+  <div class="admin-main">
+    <div class="admin-header">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="sidebar-toggle" onclick="openSidebar()">☰</button>
+        <h2 id="adminHeaderTitle">Dashboard</h2>
+      </div>
+      <div class="admin-header-right">
+        <span style="font-size:.82rem;color:var(--gray-600);">📅 <span id="adminDate"></span></span>
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          <div class="user-avatar" style="width:32px;height:32px;font-size:.8rem;" id="adminHeaderAvatar">A</div>
+          <span style="font-size:.85rem;font-weight:600;color:var(--gray-800);" id="adminHeaderName">Admin</span>
+        </div>
+      </div>
+    </div>
+    <div class="admin-body" id="adminContent"></div>
+  </div>
+</div>
+
+<!-- ================================================
+     MODALS
+================================================= -->
+<!-- Event Modal -->
+<div class="modal-overlay hidden" id="eventModal">
+  <div class="modal-box wide">
+    <div class="modal-header">
+      <h3 id="eventModalTitle">Tambah Event</h3>
+      <button class="modal-close" onclick="closeModal('eventModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="eventId" />
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="form-group" style="grid-column:1/-1;">
+          <label class="form-label">Judul Event *</label>
+          <input type="text" class="form-control" id="eventTitle" placeholder="Judul event..." />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kategori *</label>
+          <select class="form-control" id="eventCategory">
+            <option value="Seminar">Seminar</option>
+            <option value="Workshop">Workshop</option>
+            <option value="Webinar">Webinar</option>
+            <option value="Kompetisi">Kompetisi</option>
+            <option value="Organisasi">Organisasi</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Program Studi *</label>
+          <select class="form-control" id="eventProdi">
+            <option value="Teknik Elektro">Teknik Elektro</option>
+            <option value="Teknik Informatika">Teknik Informatika</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tanggal Event *</label>
+          <input type="date" class="form-control" id="eventDate" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Waktu</label>
+          <input type="time" class="form-control" id="eventTime" value="08:00" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Lokasi *</label>
+          <input type="text" class="form-control" id="eventLoc" placeholder="Contoh: Aula Gedung A" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kuota Peserta *</label>
+          <input type="number" class="form-control" id="eventQuota" placeholder="100" min="1" />
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <label class="form-label">Deskripsi *</label>
+          <textarea class="form-control" id="eventDesc" rows="3" placeholder="Deskripsi event..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-control" id="eventStatus">
+            <option value="Dibuka">Pendaftaran Dibuka</option>
+            <option value="Segera">Segera Hadir</option>
+            <option value="Selesai">Selesai</option>
+            <option value="Dibatalkan">Dibatalkan</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Upload Poster</label>
+          <input type="file" class="form-control" id="eventPoster" accept="image/*" onchange="previewPoster(this)" />
+          <div id="posterPreview" style="margin-top:.5rem;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm" style="background:var(--gray-200);color:var(--gray-800);" onclick="closeModal('eventModal')">Batal</button>
+      <button class="btn-sm btn-blue" onclick="saveEvent()">💾 Simpan Event</button>
+    </div>
+  </div>
+</div>
+
+<!-- Category Modal -->
+<div class="modal-overlay hidden" id="categoryModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="categoryModalTitle">Tambah Kategori</h3>
+      <button class="modal-close" onclick="closeModal('categoryModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="catId" />
+      <div class="form-group">
+        <label class="form-label">Nama Kategori *</label>
+        <input type="text" class="form-control" id="catName" placeholder="Nama kategori..." />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Icon (emoji)</label>
+        <input type="text" class="form-control" id="catIcon" placeholder="🎯" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Deskripsi</label>
+        <textarea class="form-control" id="catDesc" rows="2" placeholder="Deskripsi kategori..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm" style="background:var(--gray-200);color:var(--gray-800);" onclick="closeModal('categoryModal')">Batal</button>
+      <button class="btn-sm btn-blue" onclick="saveCategory()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- News Modal -->
+<div class="modal-overlay hidden" id="newsModal">
+  <div class="modal-box wide">
+    <div class="modal-header">
+      <h3 id="newsModalTitle">Tambah Berita</h3>
+      <button class="modal-close" onclick="closeModal('newsModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="newsId" />
+      <div class="form-group">
+        <label class="form-label">Judul Berita *</label>
+        <input type="text" class="form-control" id="newsTitle" placeholder="Judul berita..." />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Konten Berita *</label>
+        <textarea class="form-control" id="newsContent" rows="5" placeholder="Isi konten berita..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Gambar (URL atau Upload)</label>
+        <input type="text" class="form-control" id="newsImage" placeholder="URL gambar atau upload..." />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm" style="background:var(--gray-200);color:var(--gray-800);" onclick="closeModal('newsModal')">Batal</button>
+      <button class="btn-sm btn-blue" onclick="saveNews()">💾 Simpan Berita</button>
+    </div>
+  </div>
+</div>
+
+<!-- Gallery Modal -->
+<div class="modal-overlay hidden" id="galleryModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Tambah Foto Galeri</h3>
+      <button class="modal-close" onclick="closeModal('galleryModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="galId" />
+      <div class="form-group">
+        <label class="form-label">Judul Foto *</label>
+        <input type="text" class="form-control" id="galTitle" placeholder="Judul foto..." />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kategori</label>
+        <select class="form-control" id="galCategory">
+          <option value="Seminar">Seminar</option>
+          <option value="Workshop">Workshop</option>
+          <option value="Webinar">Webinar</option>
+          <option value="Kompetisi">Kompetisi</option>
+          <option value="Organisasi">Organisasi</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">URL Gambar</label>
+        <input type="text" class="form-control" id="galImage" placeholder="https://..." />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm" style="background:var(--gray-200);color:var(--gray-800);" onclick="closeModal('galleryModal')">Batal</button>
+      <button class="btn-sm btn-blue" onclick="saveGallery()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal-overlay hidden" id="confirmModal">
+  <div class="modal-box" style="max-width:400px;">
+    <div class="modal-header">
+      <h3>⚠️ Konfirmasi</h3>
+      <button class="modal-close" onclick="closeModal('confirmModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="confirmMessage" style="color:var(--gray-600);font-size:.95rem;">Apakah Anda yakin?</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm" style="background:var(--gray-200);color:var(--gray-800);" onclick="closeModal('confirmModal')">Batal</button>
+      <button class="btn-sm btn-danger-sm" id="confirmBtn" onclick="">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- Gallery Lightbox -->
+<div class="modal-overlay hidden" id="lightboxModal">
+  <div style="max-width:90vw;max-height:90vh;position:relative;">
+    <img id="lightboxImg" src="" alt="" style="max-width:100%;max-height:85vh;border-radius:var(--radius-lg);display:block;" />
+    <div style="position:absolute;top:-16px;right:-16px;">
+      <button class="modal-close" onclick="closeModal('lightboxModal')" style="width:40px;height:40px;font-size:1.2rem;">✕</button>
+    </div>
+    <p id="lightboxCaption" style="color:white;text-align:center;margin-top:.75rem;font-size:.9rem;"></p>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Back to top -->
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// =============================================
+//  DATA STORE (Simulating Database)
+// =============================================
+const DB = {
+  users: [
+    { id: 1, nama: 'Administrator', email: 'admin@elektro.id', password: 'admin123', prodi: 'Teknik Informatika', nim: '2020000001', role: 'admin', foto: '' },
+    { id: 2, nama: 'Budi Santoso', email: 'mahasiswa@elektro.id', password: 'user123', prodi: 'Teknik Informatika', nim: '2022310045', role: 'member', foto: '' },
+    { id: 3, nama: 'Siti Rahma', email: 'siti@elektro.id', password: 'user123', prodi: 'Teknik Elektro', nim: '2022210032', role: 'member', foto: '' },
+    { id: 4, nama: 'Danu Putra', email: 'danu@elektro.id', password: 'user123', prodi: 'Teknik Elektro', nim: '2022210019', role: 'member', foto: '' },
+  ],
+  categories: [
+    { id: 1, nama: 'Seminar', icon: '🎯', deskripsi: 'Kegiatan seminar ilmiah jurusan' },
+    { id: 2, nama: 'Workshop', icon: '🔧', deskripsi: 'Pelatihan praktikal dan hands-on' },
+    { id: 3, nama: 'Webinar', icon: '💻', deskripsi: 'Seminar online berbasis digital' },
+    { id: 4, nama: 'Kompetisi', icon: '🏆', deskripsi: 'Lomba dan kompetisi mahasiswa' },
+    { id: 5, nama: 'Organisasi', icon: '🏛️', deskripsi: 'Kegiatan organisasi mahasiswa' },
+  ],
+  events: [
+    { id: 1, judul: 'Seminar Nasional IoT & Smart City 2025', deskripsi: 'Seminar nasional membahas perkembangan Internet of Things dan implementasinya pada Smart City. Menghadirkan pembicara dari industri dan akademisi terkemuka di bidang elektronika dan sistem tertanam.', kategori: 'Seminar', prodi: 'Teknik Elektro', tanggal: '2025-01-28', waktu: '08:00', lokasi: 'Aula Gedung A Lt. 3', kuota: 150, terdaftar: 87, status: 'Dibuka', poster: 'https://images.pexels.com/photos/35335985/pexels-photo-35335985.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600' },
+    { id: 2, judul: 'Workshop Machine Learning dengan Python', deskripsi: 'Workshop intensif 2 hari mengenai Machine Learning menggunakan Python. Peserta akan belajar membuat model prediksi, klasifikasi, dan neural network secara hands-on.', kategori: 'Workshop', prodi: 'Teknik Informatika', tanggal: '2025-02-05', waktu: '09:00', lokasi: 'Lab Komputer G101', kuota: 40, terdaftar: 38, status: 'Dibuka', poster: 'https://images.pexels.com/photos/6424590/pexels-photo-6424590.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600' },
+    { id: 3, judul: 'Webinar Cyber Security 101', deskripsi: 'Webinar pengenalan keamanan siber untuk mahasiswa informatika. Materi meliputi ethical hacking, penetration testing, dan perlindungan data pribadi di era digital.', kategori: 'Webinar', prodi: 'Teknik Informatika', tanggal: '2025-02-15', waktu: '13:00', lokasi: 'Online via Zoom', kuota: 200, terdaftar: 112, status: 'Dibuka', poster: 'https://images.pexels.com/photos/5380607/pexels-photo-5380607.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600' },
+    { id: 4, judul: 'Kompetisi Robotika Jurusan Elektro 2025', deskripsi: 'Kompetisi robot line follower dan robot maze solver tingkat jurusan. Terbuka untuk semua mahasiswa Teknik Elektro yang ingin mengasah kemampuan robotika.', kategori: 'Kompetisi', prodi: 'Teknik Elektro', tanggal: '2025-02-22', waktu: '07:30', lokasi: 'Lapangan Jurusan Elektro', kuota: 60, terdaftar: 28, status: 'Dibuka', poster: 'https://images.pexels.com/photos/4940642/pexels-photo-4940642.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600' },
+    { id: 5, judul: 'Pelantikan Pengurus HMTE 2025', deskripsi: 'Kegiatan pelantikan resmi pengurus Himpunan Mahasiswa Teknik Elektro periode 2025. Dilanjutkan dengan rapat kerja dan penyusunan program kegiatan tahunan.', kategori: 'Organisasi', prodi: 'Teknik Elektro', tanggal: '2025-03-01', waktu: '10:00', lokasi: 'Ruang Sidang Jurusan', kuota: 80, terdaftar: 55, status: 'Segera', poster: 'https://images.pexels.com/photos/9275222/pexels-photo-9275222.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600' },
+    { id: 6, judul: 'Hackathon Web Development 24 Jam', deskripsi: 'Ajang kompetisi pengembangan aplikasi web dalam 24 jam. Peserta berkelompok 3-5 orang akan membangun solusi digital inovatif berdasarkan tema yang diberikan di hari H.', kategori: 'Kompetisi', prodi: 'Teknik Informatika', tanggal: '2025-03-10', waktu: '08:00', lokasi: 'Lab Software Engineering', kuota: 50, terdaftar: 42, status: 'Dibuka', poster: 'https://images.pexels.com/photos/1181260/pexels-photo-1181260.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600' },
+    { id: 7, judul: 'Seminar Energi Terbarukan & PLT Surya', deskripsi: 'Seminar membahas pemanfaatan energi terbarukan khususnya Pembangkit Listrik Tenaga Surya (PLTS) untuk kebutuhan industri dan rumah tangga. Narasumber dari PLN dan akademisi.', kategori: 'Seminar', prodi: 'Teknik Elektro', tanggal: '2024-12-10', waktu: '08:00', lokasi: 'Aula Utama Kampus', kuota: 200, terdaftar: 200, status: 'Selesai', poster: 'https://images.pexels.com/photos/14612128/pexels-photo-14612128.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600' },
+    { id: 8, judul: 'Workshop Arduino & Mikrokontroler', deskripsi: 'Workshop praktikal penggunaan Arduino untuk aplikasi IoT sederhana. Peserta akan membuat proyek nyata seperti sensor suhu, sistem monitoring, dan kontrol jarak jauh.', kategori: 'Workshop', prodi: 'Teknik Elektro', tanggal: '2024-11-20', waktu: '09:00', lokasi: 'Lab Elektronika', kuota: 30, terdaftar: 30, status: 'Selesai', poster: 'https://images.pexels.com/photos/8761299/pexels-photo-8761299.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600' },
+  ],
+  registrations: [
+    { id: 1, userId: 2, eventId: 1, status: 'Dikonfirmasi', tglDaftar: '2024-12-20' },
+    { id: 2, userId: 2, eventId: 3, status: 'Dikonfirmasi', tglDaftar: '2024-12-22' },
+    { id: 3, userId: 3, eventId: 1, status: 'Dikonfirmasi', tglDaftar: '2024-12-21' },
+    { id: 4, userId: 3, eventId: 4, status: 'Menunggu', tglDaftar: '2024-12-23' },
+    { id: 5, userId: 4, eventId: 2, status: 'Dikonfirmasi', tglDaftar: '2024-12-19' },
+  ],
+  news: [
+    { id: 1, judul: 'Jurusan Elektro Raih Akreditasi Unggul 2024', konten: 'Jurusan Teknik Elektro dan Teknik Informatika berhasil meraih akreditasi dengan peringkat "Unggul" dari BAN-PT. Ini merupakan hasil kerja keras seluruh civitas akademika selama 3 tahun terakhir dalam meningkatkan mutu pendidikan, penelitian, dan pengabdian kepada masyarakat.\n\nPeningkatan ini mencakup pembaruan kurikulum yang sesuai dengan kebutuhan industri, peningkatan fasilitas laboratorium, serta penambahan kerjasama dengan industri teknologi terkemuka.\n\nKaprodi menyampaikan ucapan terima kasih kepada seluruh dosen, mahasiswa, dan tenaga kependidikan yang telah berkontribusi dalam pencapaian ini.', gambar: 'https://images.pexels.com/photos/19199658/pexels-photo-19199658.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600', penulis: 'Tim Jurusan', tanggal: '2024-12-15' },
+    { id: 2, judul: 'Pengumuman Jadwal UAS Semester Ganjil 2024/2025', konten: 'Diberitahukan kepada seluruh mahasiswa Jurusan Teknik Elektro dan Teknik Informatika bahwa Ujian Akhir Semester (UAS) Ganjil 2024/2025 akan dilaksanakan mulai 6 Januari 2025.\n\nMahasiswa diwajibkan untuk:\n1. Mengambil kartu ujian di bagian akademik\n2. Membawa KTM yang masih berlaku\n3. Hadir 15 menit sebelum ujian dimulai\n4. Tidak membawa alat komunikasi ke ruang ujian\n\nJadwal lengkap dapat diunduh di portal akademik. Untuk pertanyaan, hubungi bagian akademik jurusan.', gambar: 'https://images.pexels.com/photos/8199174/pexels-photo-8199174.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600', penulis: 'Bagian Akademik', tanggal: '2024-12-18' },
+    { id: 3, judul: 'Beasiswa Riset Teknologi Elektro Dibuka untuk Mahasiswa Aktif', konten: 'Jurusan membuka kesempatan beasiswa riset bagi mahasiswa aktif semester 4 ke atas yang berminat melakukan penelitian di bidang teknologi elektro dan informatika.\n\nPersyaratan:\n- IPK minimal 3.20\n- Aktif dalam kegiatan kemahasiswaan\n- Proposal penelitian yang relevan\n- Surat rekomendasi dari dosen pembimbing\n\nBeasiswa mencakup biaya penelitian, honorarium, dan sertifikat pengalaman penelitian. Pendaftaran dibuka hingga 31 Januari 2025.', gambar: 'https://images.pexels.com/photos/9489788/pexels-photo-9489788.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600', penulis: 'Tim Jurusan', tanggal: '2024-12-20' },
+    { id: 4, judul: 'Kunjungan Industri ke PT. PLN Persero – Laporan Kegiatan', konten: 'Sebanyak 45 mahasiswa Teknik Elektro telah mengikuti kunjungan industri ke PT. PLN (Persero) Sulawesi Selatan pada 10 Desember 2024. Kegiatan ini bertujuan untuk memberikan gambaran nyata tentang dunia kerja di bidang kelistrikan dan sistem tenaga.\n\nMahasiswa mendapat kesempatan melihat langsung sistem kontrol gardu listrik, mengetahui prosedur keselamatan kerja, dan berdiskusi langsung dengan para insinyur PLN tentang peluang karir.', gambar: 'https://images.pexels.com/photos/36634127/pexels-photo-36634127.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600', penulis: 'Tim Humas', tanggal: '2024-12-12' },
+    { id: 5, judul: 'Mahasiswa Informatika Juara 1 Hackathon Nasional 2024', konten: 'Tim mahasiswa Teknik Informatika berhasil meraih Juara 1 dalam Hackathon Nasional yang diselenggarakan oleh Kementerian Komunikasi dan Informatika. Tim yang terdiri dari 4 mahasiswa semester 6 ini membangun aplikasi manajemen sampah berbasis AI.\n\nAplikasi mereka mampu mengidentifikasi jenis sampah menggunakan kamera smartphone dan mengarahkan warga ke tempat pembuangan yang tepat. Inovasi ini mendapat apresiasi dari juri karena nilai sosial dan teknologinya.', gambar: 'https://images.pexels.com/photos/8199622/pexels-photo-8199622.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600', penulis: 'Tim Humas', tanggal: '2024-12-05' },
+    { id: 6, judul: 'Penerimaan Mahasiswa Baru Prodi Teknik Informatika 2025', konten: 'Jurusan Teknik Elektro membuka pendaftaran mahasiswa baru untuk Program Studi Teknik Informatika periode 2025/2026. Kuota tersedia sebanyak 80 mahasiswa melalui jalur SNBT, SNMPTN, dan jalur mandiri.\n\nKeunggulan Program Studi:\n- Kurikulum berbasis industri 4.0\n- Lab modern dengan peralatan terkini\n- Kemitraan dengan perusahaan teknologi\n- Beasiswa prestasi dan bidikmisi\n- Lulusan terserap di industri ternama', gambar: 'https://images.pexels.com/photos/29627312/pexels-photo-29627312.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600', penulis: 'Bagian Akademik', tanggal: '2024-11-28' },
+  ],
+  gallery: [
+    { id: 1, judul: 'Seminar IoT – Pembukaan', gambar: 'https://images.pexels.com/photos/35335985/pexels-photo-35335985.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600', kategori: 'Seminar' },
+    { id: 2, judul: 'Workshop Machine Learning – Sesi Praktek', gambar: 'https://images.pexels.com/photos/6424590/pexels-photo-6424590.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600', kategori: 'Workshop' },
+    { id: 3, judul: 'Kompetisi Robotika – Peserta', gambar: 'https://images.pexels.com/photos/4940642/pexels-photo-4940642.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600', kategori: 'Kompetisi' },
+    { id: 4, judul: 'Webinar Cyber Security', gambar: 'https://images.pexels.com/photos/5380607/pexels-photo-5380607.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600', kategori: 'Webinar' },
+    { id: 5, judul: 'Seminar Energi Terbarukan', gambar: 'https://images.pexels.com/photos/14612128/pexels-photo-14612128.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600', kategori: 'Seminar' },
+    { id: 6, judul: 'Hackathon – Tim Presentasi', gambar: 'https://images.pexels.com/photos/1181260/pexels-photo-1181260.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600', kategori: 'Kompetisi' },
+    { id: 7, judul: 'Workshop Arduino – Demo', gambar: 'https://images.pexels.com/photos/8761299/pexels-photo-8761299.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600', kategori: 'Workshop' },
+    { id: 8, judul: 'Pelantikan HMTE 2025', gambar: 'https://images.pexels.com/photos/9275222/pexels-photo-9275222.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600', kategori: 'Organisasi' },
+  ],
+  team: [
+    { id: 1, nama: 'Ahmad Fauzan Rizki', nim: '2022310001', role: 'Project Manager & Backend Dev', prodi: 'Teknik Informatika', avatar: '' },
+    { id: 2, nama: 'Nurul Hidayah', nim: '2022310014', role: 'Frontend Developer', prodi: 'Teknik Informatika', avatar: '' },
+    { id: 3, nama: 'Bagas Pramudito', nim: '2022310022', role: 'Database Designer', prodi: 'Teknik Informatika', avatar: '' },
+    { id: 4, nama: 'Fitri Ramadhani', nim: '2022310031', role: 'UI/UX Designer', prodi: 'Teknik Informatika', avatar: '' },
+    { id: 5, nama: 'Rian Saputra', nim: '2022310048', role: 'Full Stack Developer', prodi: 'Teknik Informatika', avatar: '' },
+  ]
+};
+
+// =============================================
+//  SESSION / AUTH
+// =============================================
+let currentUser = null;
+let currentPage = 'home';
+let currentAdminSection = 'dashboard';
+let currentMemberSection = 'profile';
+let filterProdiValue = '';
+let pendingConfirmFn = null;
+
+// =============================================
+//  NAVIGATION
+// =============================================
+function navigate(page) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + page);
+  if (!target) { console.warn('Page not found:', page); return; }
+  target.classList.add('active');
+  currentPage = page;
+
+  // Update nav active
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.classList.toggle('active', a.dataset.page === page);
+  });
+
+  // Admin: remove navbar if on admin page
+  const navbar = document.getElementById('navbar');
+  const backTop = document.getElementById('backTop');
+  if (page === 'admin') {
+    navbar.style.display = 'none';
+    backTop.style.display = 'none';
+  } else {
+    navbar.style.display = '';
+    backTop.style.display = '';
+  }
+
+  // Scroll top
+  window.scrollTo(0, 0);
+
+  // Page-specific init
+  switch(page) {
+    case 'home':         renderHomeEvents(); renderHomeNews(); initParticles(); initHeroCountdown(); break;
+    case 'events':       renderAllEvents(); break;
+    case 'news':         renderNewsGrid(); break;
+    case 'gallery':      renderGallery(); break;
+    case 'about':        renderTeam(); break;
+    case 'admin':        checkAdmin(); break;
+    case 'member':       checkMember(); renderMemberContent(); break;
+    case 'my-events':    renderMyEvents(); break;
+  }
+
+  initScrollAnimations();
+  closeMobileMenu();
+}
+
+function filterProdi(val) {
+  filterProdiValue = val;
+  const sel = document.getElementById('filterProdi');
+  if (sel) sel.value = val;
+  filterEvents();
+}
+
+// =============================================
+//  AUTH FUNCTIONS
+// =============================================
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  const alertEl = document.getElementById('loginAlert');
+
+  if (!email || !pass) {
+    alertEl.innerHTML = '<div class="alert alert-error">⚠️ Email dan password harus diisi!</div>';
+    return;
+  }
+
+  const user = DB.users.find(u => u.email === email && u.password === pass);
+  if (!user) {
+    alertEl.innerHTML = '<div class="alert alert-error">❌ Email atau password salah. Coba lagi.</div>';
+    return;
+  }
+
+  // Login success
+  currentUser = user;
+  alertEl.innerHTML = '';
+  updateNavForUser();
+  showToast('success', '✅ Login berhasil! Selamat datang, ' + user.nama.split(' ')[0] + '!');
+
+  if (user.role === 'admin') {
+    navigate('admin');
+  } else {
+    navigate('member');
+  }
+}
+
+function doRegister() {
+  const nama   = document.getElementById('regNama').value.trim();
+  const nim    = document.getElementById('regNim').value.trim();
+  const email  = document.getElementById('regEmail').value.trim();
+  const prodi  = document.getElementById('regProdi').value;
+  const pass   = document.getElementById('regPass').value;
+  const pass2  = document.getElementById('regPass2').value;
+  const alertEl = document.getElementById('registerAlert');
+
+  if (!nama || !nim || !email || !prodi || !pass) {
+    alertEl.innerHTML = '<div class="alert alert-error">⚠️ Semua field harus diisi!</div>'; return;
+  }
+  if (pass.length < 6) {
+    alertEl.innerHTML = '<div class="alert alert-error">⚠️ Password minimal 6 karakter!</div>'; return;
+  }
+  if (pass !== pass2) {
+    alertEl.innerHTML = '<div class="alert alert-error">⚠️ Konfirmasi password tidak cocok!</div>'; return;
+  }
+  if (DB.users.find(u => u.email === email)) {
+    alertEl.innerHTML = '<div class="alert alert-error">⚠️ Email sudah terdaftar!</div>'; return;
+  }
+
+  const newUser = { id: DB.users.length + 1, nama, email, password: pass, prodi, nim, role: 'member', foto: '' };
+  DB.users.push(newUser);
+  currentUser = newUser;
+  updateNavForUser();
+  alertEl.innerHTML = '';
+  showToast('success', '✅ Registrasi berhasil! Selamat bergabung!');
+  navigate('member');
+}
+
+function logout() {
+  currentUser = null;
+  closeDropdown();
+  updateNavForUser();
+  navigate('home');
+  showToast('info', '👋 Anda telah keluar dari akun.');
+}
+
+function updateNavForUser() {
+  const guestEl  = document.getElementById('navGuest');
+  const userEl   = document.getElementById('navUser');
+  const mobileL  = document.getElementById('mobileLogin');
+  const mobileR  = document.getElementById('mobileRegister');
+  const adminLnk = document.getElementById('adminMenuLink');
+  if (currentUser) {
+    guestEl.classList.add('hidden');
+    userEl.classList.remove('hidden');
+    if (mobileL) mobileL.style.display = 'none';
+    if (mobileR) mobileR.style.display = 'none';
+    document.getElementById('navAvatar').textContent = currentUser.nama.charAt(0).toUpperCase();
+    document.getElementById('navUserName').textContent = currentUser.nama.split(' ')[0];
+    if (adminLnk) adminLnk.classList.toggle('hidden', currentUser.role !== 'admin');
+  } else {
+    guestEl.classList.remove('hidden');
+    userEl.classList.add('hidden');
+    if (mobileL) mobileL.style.display = '';
+    if (mobileR) mobileR.style.display = '';
+    if (adminLnk) adminLnk.classList.add('hidden');
+  }
+}
+
+function checkAdmin() {
+  if (!currentUser || currentUser.role !== 'admin') {
+    showToast('error', '🔒 Akses ditolak. Silakan login sebagai admin.');
+    navigate('login'); return;
+  }
+  document.getElementById('sidebarAvatar').textContent = currentUser.nama.charAt(0);
+  document.getElementById('sidebarName').textContent = currentUser.nama.split(' ')[0];
+  document.getElementById('adminHeaderAvatar').textContent = currentUser.nama.charAt(0);
+  document.getElementById('adminHeaderName').textContent = currentUser.nama.split(' ')[0];
+  document.getElementById('adminDate').textContent = new Date().toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  showAdminSection('dashboard');
+}
+
+function checkMember() {
+  if (!currentUser) {
+    showToast('error', '🔒 Silakan login terlebih dahulu.');
+    navigate('login'); return;
+  }
+  document.getElementById('memberAvatar').textContent = currentUser.nama.charAt(0);
+  document.getElementById('memberName').textContent = currentUser.nama;
+  document.getElementById('memberProdi').textContent = currentUser.prodi;
+}
+
+// =============================================
+//  UI HELPERS
+// =============================================
+function toggleUserMenu() {
+  document.getElementById('userDropdown').classList.toggle('hidden');
+}
+function closeDropdown() {
+  const d = document.getElementById('userDropdown');
+  if (d) d.classList.add('hidden');
+}
+function toggleMobileMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+function closeMobileMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+function openSidebar() {
+  document.getElementById('adminSidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('show');
+}
+function closeSidebar() {
+  document.getElementById('adminSidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.relative')) closeDropdown();
+});
+window.addEventListener('scroll', () => {
+  const navbar = document.getElementById('navbar');
+  navbar.classList.toggle('scrolled', window.scrollY > 50);
+  document.getElementById('backTop').classList.toggle('show', window.scrollY > 300);
+});
+
+// =============================================
+//  MODALS
+// =============================================
+function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+function showConfirm(message, fn) {
+  document.getElementById('confirmMessage').textContent = message;
+  pendingConfirmFn = fn;
+  document.getElementById('confirmBtn').onclick = () => { fn(); closeModal('confirmModal'); };
+  openModal('confirmModal');
+}
+
+// =============================================
+//  TOAST
+// =============================================
+function showToast(type, message) {
+  const container = document.getElementById('toastContainer');
+  const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span class="toast-icon">${icons[type]||'ℹ️'}</span><span class="toast-msg">${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(40px)'; toast.style.transition = '.3s'; setTimeout(() => toast.remove(), 300); }, 3500);
+}
+
+// =============================================
+//  PARTICLES
+// =============================================
+function initParticles() {
+  const c = document.getElementById('heroParticles');
+  if (!c) return;
+  c.innerHTML = '';
+  for (let i = 0; i < 40; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.width = (Math.random() * 3 + 1) + 'px';
+    p.style.height = p.style.width;
+    p.style.animationDuration = (Math.random() * 12 + 6) + 's';
+    p.style.animationDelay = (Math.random() * 8) + 's';
+    c.appendChild(p);
+  }
+}
+
+// =============================================
+//  COUNTDOWN
+// =============================================
+function initHeroCountdown() {
+  const target = new Date();
+  target.setDate(target.getDate() + 5);
+  target.setHours(20, 0, 0, 0);
+  clearInterval(window._countdownInterval);
+  window._countdownInterval = setInterval(() => {
+    const now  = new Date();
+    const diff = target - now;
+    if (diff <= 0) { clearInterval(window._countdownInterval); return; }
+    const d = Math.floor(diff / 864e5);
+    const h = Math.floor((diff % 864e5) / 36e5);
+    const m = Math.floor((diff % 36e5) / 6e4);
+    const s = Math.floor((diff % 6e4) / 1e3);
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v).padStart(2,'0'); };
+    set('hcd', d); set('hch', h); set('hcm', m); set('hcs', s);
+  }, 1000);
+}
+
+function renderDetailCountdown(dateStr, containerId) {
+  const target = new Date(dateStr + 'T08:00:00');
+  const renderFn = () => {
+    const now = new Date();
+    const diff = target - now;
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    if (diff <= 0) { el.innerHTML = '<div class="chip" style="font-size:.9rem;padding:.5rem 1rem;">🎉 Event berlangsung / telah selesai</div>'; return; }
+    const d = Math.floor(diff / 864e5);
+    const h = Math.floor((diff % 864e5) / 36e5);
+    const m = Math.floor((diff % 36e5) / 6e4);
+    const s = Math.floor((diff % 6e4) / 1e3);
+    el.innerHTML = `
+      <div class="big-countdown">
+        <div class="big-countdown-item"><span class="num" id="cd-d">${String(d).padStart(2,'0')}</span><span class="unit">Hari</span></div>
+        <div class="big-countdown-sep">:</div>
+        <div class="big-countdown-item"><span class="num" id="cd-h">${String(h).padStart(2,'0')}</span><span class="unit">Jam</span></div>
+        <div class="big-countdown-sep">:</div>
+        <div class="big-countdown-item"><span class="num" id="cd-m">${String(m).padStart(2,'0')}</span><span class="unit">Menit</span></div>
+        <div class="big-countdown-sep">:</div>
+        <div class="big-countdown-item"><span class="num" id="cd-s">${String(s).padStart(2,'0')}</span><span class="unit">Detik</span></div>
+      </div>`;
+    clearInterval(window._detailInterval);
+    window._detailInterval = setInterval(() => {
+      const n2 = new Date(); const d2 = target - n2;
+      if (d2 <= 0) { clearInterval(window._detailInterval); return; }
+      const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = String(v).padStart(2,'0'); };
+      set('cd-d', Math.floor(d2/864e5));
+      set('cd-h', Math.floor((d2%864e5)/36e5));
+      set('cd-m', Math.floor((d2%36e5)/6e4));
+      set('cd-s', Math.floor((d2%6e4)/1e3));
+    }, 1000);
+  };
+  renderFn();
+}
+
+// =============================================
+//  RENDER HELPERS
+// =============================================
+function tagColor(cat) {
+  const map = { 'Seminar':'seminar','Workshop':'workshop','Webinar':'webinar','Kompetisi':'kompetisi','Organisasi':'organisasi' };
+  return 'tag-' + (map[cat] || 'seminar');
+}
+function prodiTag(p) {
+  return p === 'Teknik Elektro' ? 'tag-elektro' : 'tag-informatika';
+}
+function statusBadge(s) {
+  const map = { 'Dibuka':'open','Segera':'upcoming','Selesai':'closed','Dibatalkan':'closed','Ongoing':'ongoing','Menunggu':'upcoming','Dikonfirmasi':'open' };
+  return `<span class="status-badge status-${map[s]||'open'}">${s}</span>`;
+}
+function formatDate(d) {
+  if (!d) return '-';
+  return new Date(d).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+}
+function progress(filled, total) {
+  const pct = Math.min(100, Math.round((filled/total)*100));
+  return `<div class="progress-bar" style="margin-top:.4rem;"><div class="progress-fill" style="width:${pct}%"></div></div>`;
+}
+function seatColor(filled, total) {
+  const pct = (filled/total)*100;
+  if (pct >= 90) return 'color:var(--danger)';
+  if (pct >= 70) return 'color:var(--warning)';
+  return 'color:var(--success)';
+}
+
+function renderEventCard(ev, showRegBtn = true) {
+  const registered = DB.registrations.find(r => currentUser && r.userId === currentUser.id && r.eventId === ev.id);
+  const regBtn = showRegBtn
+    ? (registered
+        ? `<button class="btn-sm" style="background:rgba(0,200,83,.1);color:#00a844;cursor:default;">✅ Terdaftar</button>`
+        : (currentUser && currentUser.role === 'member'
+            ? `<button class="btn-sm btn-blue" onclick="registerEvent(${ev.id},event)">📝 Daftar</button>`
+            : `<button class="btn-sm btn-outline-blue" onclick="navigate('login')">🔑 Login</button>`))
+    : '';
+  return `
+    <div class="event-card" onclick="viewEventDetail(${ev.id})">
+      ${ev.poster
+        ? `<img src="${ev.poster}" class="event-card-img" alt="${ev.judul}" loading="lazy" />`
+        : `<div class="event-card-img-placeholder">${ev.kategori === 'Seminar' ? '🎯' : ev.kategori === 'Workshop' ? '🔧' : ev.kategori === 'Webinar' ? '💻' : ev.kategori === 'Kompetisi' ? '🏆' : '🏛️'}</div>`
+      }
+      <div class="event-card-body">
+        <div class="event-tags">
+          <span class="tag ${prodiTag(ev.prodi)}">${ev.prodi === 'Teknik Elektro' ? '⚡ Elektro' : '💻 Informatika'}</span>
+          <span class="tag ${tagColor(ev.kategori)}">${ev.kategori}</span>
+          ${statusBadge(ev.status)}
+        </div>
+        <h3 class="event-title">${ev.judul}</h3>
+        <p class="event-desc">${ev.deskripsi}</p>
+        <div class="event-meta">
+          <span><span class="icon">📅</span>${formatDate(ev.tanggal)} • ${ev.waktu || '08:00'} WITA</span>
+          <span><span class="icon">📍</span>${ev.lokasi}</span>
+        </div>
+        <div style="margin-bottom:.75rem;">
+          <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.3rem;">
+            <span style="${seatColor(ev.terdaftar,ev.kuota)};font-weight:600;">${ev.terdaftar}/${ev.kuota} Peserta</span>
+            <span style="color:var(--gray-400);">${Math.round((ev.terdaftar/ev.kuota)*100)}% terisi</span>
+          </div>
+          ${progress(ev.terdaftar, ev.kuota)}
+        </div>
+        <div class="event-footer">
+          <span class="event-seats">Sisa: <b style="${seatColor(ev.terdaftar, ev.kuota)}">${ev.kuota - ev.terdaftar} kursi</b></span>
+          <div style="display:flex;gap:.4rem;">
+            <button class="btn-sm btn-outline-blue" onclick="viewEventDetail(${ev.id});event.stopPropagation()">👁️ Detail</button>
+            ${regBtn}
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderNewsCard(n) {
+  return `
+    <div class="news-card" onclick="viewNewsDetail(${n.id})">
+      <img src="${n.gambar}" class="news-card-img" alt="${n.judul}" loading="lazy" />
+      <div class="news-card-body">
+        <div class="news-date">📅 ${formatDate(n.tanggal)} &nbsp;·&nbsp; ✍️ ${n.penulis}</div>
+        <h3 class="news-title">${n.judul}</h3>
+        <p class="news-excerpt">${n.konten.substring(0,120)}...</p>
+      </div>
+    </div>`;
+}
+
+// =============================================
+//  HOME PAGE RENDER
+// =============================================
+function renderHomeEvents() {
+  const grid = document.getElementById('homeEventGrid');
+  if (!grid) return;
+  const upcoming = DB.events.filter(e => e.status !== 'Selesai' && e.status !== 'Dibatalkan').slice(0, 3);
+  grid.innerHTML = upcoming.map(e => renderEventCard(e)).join('');
+}
+function renderHomeNews() {
+  const grid = document.getElementById('homeNewsGrid');
+  if (!grid) return;
+  grid.innerHTML = DB.news.slice(0,3).map(n => renderNewsCard(n)).join('');
+}
+
+// =============================================
+//  EVENTS PAGE
+// =============================================
+function renderAllEvents() {
+  const sel = document.getElementById('filterProdi');
+  if (sel && filterProdiValue) sel.value = filterProdiValue;
+  filterEvents();
+}
+function filterEvents() {
+  const q       = (document.getElementById('eventSearch')?.value||'').toLowerCase();
+  const cat     = document.getElementById('filterCategory')?.value || '';
+  const prodi   = document.getElementById('filterProdi')?.value || '';
+  const status  = document.getElementById('filterStatus')?.value || '';
+  let results = DB.events.filter(ev => {
+    const matchQ = !q || ev.judul.toLowerCase().includes(q) || ev.deskripsi.toLowerCase().includes(q);
+    const matchC = !cat    || ev.kategori === cat;
+    const matchP = !prodi  || ev.prodi === prodi;
+    const matchS = !status || ev.status === status;
+    return matchQ && matchC && matchP && matchS;
+  });
+  const grid  = document.getElementById('eventsGrid');
+  const empty = document.getElementById('eventsEmpty');
+  const info  = document.getElementById('eventsResultInfo');
+  if (!grid) return;
+  if (results.length === 0) {
+    grid.innerHTML = '';
+    if (empty) empty.classList.remove('hidden');
+    if (info) info.innerHTML = 'Menampilkan <b>0</b> event';
+  } else {
+    if (empty) empty.classList.add('hidden');
+    grid.innerHTML = results.map(e => renderEventCard(e)).join('');
+    if (info) info.innerHTML = `Menampilkan <b>${results.length}</b> event`;
+  }
+  filterProdiValue = '';
+}
+function resetFilters() {
+  document.getElementById('eventSearch').value = '';
+  document.getElementById('filterCategory').value = '';
+  document.getElementById('filterProdi').value = '';
+  document.getElementById('filterStatus').value = '';
+  filterEvents();
+}
+
+// =============================================
+//  EVENT DETAIL
+// =============================================
+function viewEventDetail(id) {
+  const ev = DB.events.find(e => e.id === id);
+  if (!ev) return;
+  const registered = currentUser ? DB.registrations.find(r => r.userId === currentUser.id && r.eventId === id) : null;
+  const regCount = DB.registrations.filter(r => r.eventId === id).length;
+
+  document.getElementById('eventDetailContent').innerHTML = `
+    <div class="detail-hero">
+      <div class="container" style="position:relative;z-index:2;">
+        <div class="breadcrumb">
+          <a onclick="navigate('home')">Beranda</a><span>›</span>
+          <a onclick="navigate('events')">Event</a><span>›</span>
+          <span>${ev.judul}</span>
+        </div>
+        <div class="event-tags" style="margin-bottom:.75rem;">
+          <span class="tag ${prodiTag(ev.prodi)}">${ev.prodi}</span>
+          <span class="tag ${tagColor(ev.kategori)}">${ev.kategori}</span>
+          ${statusBadge(ev.status)}
+        </div>
+        <h1 style="color:white;font-size:clamp(1.4rem,3vw,2rem);font-weight:800;line-height:1.3;max-width:700px;">${ev.judul}</h1>
+      </div>
+    </div>
+    <div class="detail-body">
+      <div class="container">
+        <div class="detail-grid">
+          <!-- Main content -->
+          <div>
+            <div class="info-card">
+              <h3>📋 Deskripsi Event</h3>
+              <p style="font-size:.9rem;color:var(--gray-600);line-height:1.9;">${ev.deskripsi}</p>
+            </div>
+            <div class="info-card">
+              <h3>⏳ Hitung Mundur</h3>
+              <div id="detailCountdown">Loading...</div>
+            </div>
+            <div class="info-card">
+              <h3>👥 Pendaftaran Peserta</h3>
+              <div style="margin-bottom:.75rem;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:.5rem;">
+                  <span style="font-size:.85rem;color:var(--gray-600);">Terisi</span>
+                  <span style="font-weight:700;color:var(--navy);">${ev.terdaftar}/${ev.kuota} Peserta</span>
+                </div>
+                ${progress(ev.terdaftar, ev.kuota)}
+              </div>
+              ${currentUser && currentUser.role === 'member'
+                ? (registered
+                    ? `<button class="btn-full btn-primary-full" style="background:rgba(0,200,83,.1);color:#00a844;border:1.5px solid #00a844;cursor:default;" disabled>✅ Anda Sudah Terdaftar</button>`
+                    : ev.kuota > ev.terdaftar
+                      ? `<button class="btn-full btn-primary-full" onclick="registerEvent(${id})">📝 Daftar Sekarang</button>`
+                      : `<button class="btn-full" style="background:var(--gray-200);color:var(--gray-600);" disabled>❌ Kuota Penuh</button>`)
+                : currentUser
+                  ? `<div class="alert alert-info">ℹ️ Pendaftaran hanya untuk member. Anda login sebagai admin.</div>`
+                  : `<button class="btn-full btn-primary-full" onclick="navigate('login')">🔑 Login untuk Daftar</button>`
+              }
+            </div>
+          </div>
+          <!-- Sidebar -->
+          <div>
+            ${ev.poster
+              ? `<img src="${ev.poster}" class="detail-poster" alt="${ev.judul}" />`
+              : `<div class="detail-poster-placeholder">${ev.kategori === 'Kompetisi' ? '🏆' : ev.kategori === 'Workshop' ? '🔧' : '🎯'}</div>`
+            }
+            <div class="info-card" style="margin-top:1.25rem;">
+              <h3>ℹ️ Info Event</h3>
+              <div class="info-row"><span class="label">📅 Tanggal</span><span class="value">${formatDate(ev.tanggal)}</span></div>
+              <div class="info-row"><span class="label">🕐 Waktu</span><span class="value">${ev.waktu || '08:00'} WITA</span></div>
+              <div class="info-row"><span class="label">📍 Lokasi</span><span class="value">${ev.lokasi}</span></div>
+              <div class="info-row"><span class="label">🏷️ Kategori</span><span class="value">${ev.kategori}</span></div>
+              <div class="info-row"><span class="label">🎓 Prodi</span><span class="value">${ev.prodi}</span></div>
+              <div class="info-row"><span class="label">👥 Kuota</span><span class="value">${ev.kuota} Peserta</span></div>
+              <div class="info-row"><span class="label">📊 Status</span><span class="value">${statusBadge(ev.status)}</span></div>
+            </div>
+            <button class="btn-sm btn-outline-blue w-full" style="justify-content:center;padding:.7rem;" onclick="navigate('events')">← Kembali ke Daftar Event</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  navigate('event-detail');
+  setTimeout(() => renderDetailCountdown(ev.tanggal, 'detailCountdown'), 100);
+}
+
+// =============================================
+//  REGISTER EVENT
+// =============================================
+function registerEvent(eventId, e) {
+  if (e) e.stopPropagation();
+  if (!currentUser) { navigate('login'); return; }
+  if (currentUser.role !== 'member') { showToast('error', '⚠️ Hanya member yang dapat mendaftar event.'); return; }
+
+  const ev = DB.events.find(ev => ev.id === eventId);
+  if (!ev) return;
+  if (DB.registrations.find(r => r.userId === currentUser.id && r.eventId === eventId)) {
+    showToast('info', 'ℹ️ Anda sudah terdaftar di event ini.'); return;
+  }
+  if (ev.terdaftar >= ev.kuota) { showToast('error', '❌ Kuota event sudah penuh!'); return; }
+
+  DB.registrations.push({ id: DB.registrations.length + 1, userId: currentUser.id, eventId, status: 'Dikonfirmasi', tglDaftar: new Date().toISOString().split('T')[0] });
+  ev.terdaftar++;
+  showToast('success', `✅ Berhasil daftar ke event: ${ev.judul}`);
+
+  // Re-render current page
+  if (currentPage === 'events') filterEvents();
+  if (currentPage === 'home') renderHomeEvents();
+}
+
+// =============================================
+//  NEWS PAGE
+// =============================================
+function renderNewsGrid() {
+  document.getElementById('newsGrid').innerHTML = DB.news.map(n => renderNewsCard(n)).join('');
+}
+function filterNews() {
+  const q = document.getElementById('newsSearch').value.toLowerCase();
+  const results = q ? DB.news.filter(n => n.judul.toLowerCase().includes(q) || n.konten.toLowerCase().includes(q)) : DB.news;
+  document.getElementById('newsGrid').innerHTML = results.map(n => renderNewsCard(n)).join('');
+}
+function viewNewsDetail(id) {
+  const n = DB.news.find(x => x.id === id);
+  if (!n) return;
+  document.getElementById('newsDetailContent').innerHTML = `
+    <div style="background:linear-gradient(135deg,var(--navy),var(--navy-mid));padding:3rem 0 2rem;">
+      <div class="container">
+        <div class="breadcrumb"><a onclick="navigate('home')">Beranda</a><span>›</span><a onclick="navigate('news')">Berita</a><span>›</span>Detail</div>
+        <div style="max-width:700px;">
+          <div class="news-date" style="color:rgba(255,255,255,.5);margin-bottom:.75rem;">📅 ${formatDate(n.tanggal)} &nbsp;·&nbsp; ✍️ ${n.penulis}</div>
+          <h1 style="color:white;font-size:clamp(1.3rem,3vw,2rem);font-weight:800;line-height:1.35;">${n.judul}</h1>
+        </div>
+      </div>
+    </div>
+    <div class="container" style="padding:2.5rem 1.5rem;max-width:900px;">
+      <div style="background:white;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);">
+        <img src="${n.gambar}" alt="${n.judul}" style="width:100%;height:360px;object-fit:cover;" />
+        <div style="padding:2.5rem;">
+          <div style="font-size:.95rem;color:var(--gray-700);line-height:2.1;white-space:pre-line;">${n.konten}</div>
+          <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center;">
+            <button class="btn-sm btn-outline-blue" onclick="navigate('news')">← Kembali ke Berita</button>
+            <span style="font-size:.8rem;color:var(--gray-400);">Dibagikan oleh ${n.penulis}</span>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  navigate('news-detail');
+}
+
+// =============================================
+//  GALLERY PAGE
+// =============================================
+function renderGallery(cat = '') {
+  const items = cat ? DB.gallery.filter(g => g.kategori === cat) : DB.gallery;
+  document.getElementById('galleryGrid').innerHTML = items.map(g => `
+    <div class="gallery-item" onclick="openLightbox('${g.gambar}','${g.judul}')">
+      <img src="${g.gambar}" alt="${g.judul}" loading="lazy" />
+      <div class="gallery-overlay"><p class="gallery-caption">📷 ${g.judul}</p></div>
+    </div>`).join('');
+}
+function filterGallery(cat) {
+  renderGallery(cat);
+  document.querySelectorAll('#galleryFilters button').forEach(b => {
+    b.className = 'btn-sm btn-outline-blue';
+  });
+  const id = 'gf-' + (cat.toLowerCase() || 'all');
+  const btn = document.getElementById(id);
+  if (btn) btn.className = 'btn-sm btn-blue';
+}
+function openLightbox(src, caption) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightboxCaption').textContent = caption;
+  openModal('lightboxModal');
+}
+
+// =============================================
+//  TEAM / ABOUT
+// =============================================
+function renderTeam() {
+  document.getElementById('teamGrid').innerHTML = DB.team.map(t => {
+    const initials = t.nama.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+    return `
+      <div class="team-card">
+        <div class="team-avatar-placeholder">${initials}</div>
+        <div class="team-name">${t.nama}</div>
+        <div class="team-role">${t.role}</div>
+        <div class="team-nim">NIM: ${t.nim}</div>
+        <div style="margin-top:.5rem;"><span class="chip" style="font-size:.68rem;">${t.prodi === 'Teknik Elektro' ? '⚡' : '💻'} ${t.prodi}</span></div>
+      </div>`;
+  }).join('');
+}
+
+// =============================================
+//  MEMBER PAGE
+// =============================================
+function showMemberSection(section) {
+  currentMemberSection = section;
+  document.querySelectorAll('.member-nav li a').forEach(a => a.classList.remove('active'));
+  event && event.target && event.target.classList.add('active');
+  renderMemberContent();
+}
+function renderMemberContent() {
+  const el = document.getElementById('memberContent');
+  if (!el || !currentUser) return;
+
+  if (currentMemberSection === 'profile') {
+    el.innerHTML = `
+      <div class="profile-card">
+        <h3>👤 Profil Saya</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+          <div class="form-group">
+            <label class="form-label">Nama Lengkap</label>
+            <input type="text" class="form-control" id="profNama" value="${currentUser.nama}" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">NIM</label>
+            <input type="text" class="form-control" value="${currentUser.nim}" disabled style="background:var(--gray-200);" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" id="profEmail" value="${currentUser.email}" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Program Studi</label>
+            <select class="form-control" id="profProdi">
+              <option ${currentUser.prodi === 'Teknik Elektro' ? 'selected' : ''}>Teknik Elektro</option>
+              <option ${currentUser.prodi === 'Teknik Informatika' ? 'selected' : ''}>Teknik Informatika</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column:1/-1;">
+            <label class="form-label">Password Baru (kosongkan jika tidak ingin ubah)</label>
+            <input type="password" class="form-control" id="profPass" placeholder="Password baru..." />
+          </div>
+        </div>
+        <button class="btn-sm btn-blue" onclick="saveProfile()" style="margin-top:.5rem;">💾 Simpan Perubahan</button>
+      </div>
+      <div class="profile-card">
+        <h3>📊 Statistik Saya</h3>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+          <div style="text-align:center;padding:1.25rem;background:rgba(21,101,192,.06);border-radius:var(--radius);border:1px solid rgba(21,101,192,.15);">
+            <div style="font-size:2rem;font-weight:900;color:var(--blue);">${DB.registrations.filter(r=>r.userId===currentUser.id).length}</div>
+            <div style="font-size:.8rem;color:var(--gray-600);">Event Diikuti</div>
+          </div>
+          <div style="text-align:center;padding:1.25rem;background:rgba(0,200,83,.06);border-radius:var(--radius);border:1px solid rgba(0,200,83,.15);">
+            <div style="font-size:2rem;font-weight:900;color:var(--success);">${DB.registrations.filter(r=>r.userId===currentUser.id&&r.status==='Dikonfirmasi').length}</div>
+            <div style="font-size:.8rem;color:var(--gray-600);">Dikonfirmasi</div>
+          </div>
+          <div style="text-align:center;padding:1.25rem;background:rgba(255,152,0,.06);border-radius:var(--radius);border:1px solid rgba(255,152,0,.15);">
+            <div style="font-size:2rem;font-weight:900;color:var(--warning);">${DB.registrations.filter(r=>r.userId===currentUser.id&&r.status==='Menunggu').length}</div>
+            <div style="font-size:.8rem;color:var(--gray-600);">Menunggu</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  if (currentMemberSection === 'my-events') {
+    const myRegs = DB.registrations.filter(r => r.userId === currentUser.id);
+    const myEventsList = myRegs.map(r => {
+      const ev = DB.events.find(e => e.id === r.eventId);
+      if (!ev) return '';
+      return `
+        <div style="background:white;border-radius:var(--radius-lg);padding:1.25rem;box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);display:flex;gap:1rem;align-items:center;margin-bottom:.75rem;">
+          ${ev.poster ? `<img src="${ev.poster}" style="width:80px;height:60px;border-radius:8px;object-fit:cover;flex-shrink:0;" />` : `<div style="width:80px;height:60px;border-radius:8px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">🎯</div>`}
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:700;color:var(--navy);font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ev.judul}</div>
+            <div style="font-size:.8rem;color:var(--gray-600);margin-top:.2rem;">📅 ${formatDate(ev.tanggal)} • 📍 ${ev.lokasi}</div>
+            <div style="margin-top:.4rem;display:flex;gap:.5rem;align-items:center;">
+              <span class="tag ${tagColor(ev.kategori)}">${ev.kategori}</span>
+              ${statusBadge(r.status)}
+            </div>
+          </div>
+          <button class="btn-sm btn-outline-blue" onclick="viewEventDetail(${ev.id})">Detail</button>
+        </div>`;
+    }).join('');
+    el.innerHTML = `
+      <div class="profile-card">
+        <h3>📋 Event yang Saya Ikuti (${myRegs.length})</h3>
+        ${myRegs.length > 0 ? myEventsList : '<div class="empty-state"><div class="icon">📋</div><h3>Belum ada event</h3><p>Anda belum mendaftar ke event apapun.</p><button class="btn-sm btn-blue" style="margin-top:1rem;" onclick="navigate(\'events\')">Lihat Event</button></div>'}
+      </div>`;
+  }
+
+  if (currentMemberSection === 'browse-events') {
+    const available = DB.events.filter(ev => ev.status !== 'Selesai');
+    el.innerHTML = `
+      <div class="profile-card">
+        <h3>🔍 Temukan Event</h3>
+        <div class="events-grid">${available.map(e => renderEventCard(e)).join('')}</div>
+      </div>`;
+  }
+}
+
+function saveProfile() {
+  if (!currentUser) return;
+  const nama  = document.getElementById('profNama')?.value.trim();
+  const email = document.getElementById('profEmail')?.value.trim();
+  const prodi = document.getElementById('profProdi')?.value;
+  const pass  = document.getElementById('profPass')?.value;
+  if (!nama || !email) { showToast('error', '⚠️ Nama dan email tidak boleh kosong!'); return; }
+  currentUser.nama  = nama;
+  currentUser.email = email;
+  currentUser.prodi = prodi;
+  if (pass && pass.length >= 6) currentUser.password = pass;
+  const idx = DB.users.findIndex(u => u.id === currentUser.id);
+  if (idx >= 0) DB.users[idx] = { ...DB.users[idx], ...currentUser };
+  updateNavForUser();
+  document.getElementById('memberName').textContent = currentUser.nama;
+  document.getElementById('memberProdi').textContent = currentUser.prodi;
+  document.getElementById('memberAvatar').textContent = currentUser.nama.charAt(0);
+  showToast('success', '✅ Profil berhasil diperbarui!');
+}
+
+function renderMyEvents() {
+  if (!currentUser) { navigate('login'); return; }
+  const myRegs = DB.registrations.filter(r => r.userId === currentUser.id);
+  const grid = document.getElementById('myEventsGrid');
+  if (!grid) return;
+  if (myRegs.length === 0) {
+    grid.innerHTML = '<div class="empty-state"><div class="icon">📋</div><h3>Belum ada event</h3><p>Anda belum mendaftar ke event apapun.</p></div>';
+    return;
+  }
+  grid.innerHTML = myRegs.map(r => {
+    const ev = DB.events.find(e => e.id === r.eventId);
+    return ev ? renderEventCard(ev) : '';
+  }).join('');
+}
+
+// =============================================
+//  ADMIN SECTIONS
+// =============================================
+function showAdminSection(section) {
+  currentAdminSection = section;
+  document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+  const active = document.getElementById('sn-' + section);
+  if (active) active.classList.add('active');
+  const titles = {
+    'dashboard': 'Dashboard Overview',
+    'events-admin': 'Kelola Event',
+    'categories-admin': 'Kelola Kategori',
+    'registrations-admin': 'Peserta Event',
+    'news-admin': 'Kelola Berita',
+    'gallery-admin': 'Kelola Galeri',
+    'users-admin': 'Kelola User',
+  };
+  document.getElementById('adminHeaderTitle').textContent = titles[section] || section;
+  closeSidebar();
+
+  const content = document.getElementById('adminContent');
+  switch(section) {
+    case 'dashboard':          renderDashboard(content); break;
+    case 'events-admin':       renderAdminEvents(content); break;
+    case 'categories-admin':   renderAdminCategories(content); break;
+    case 'registrations-admin':renderAdminRegistrations(content); break;
+    case 'news-admin':         renderAdminNews(content); break;
+    case 'gallery-admin':      renderAdminGallery(content); break;
+    case 'users-admin':        renderAdminUsers(content); break;
+  }
+}
+
+function renderDashboard(el) {
+  const totalEvents = DB.events.length;
+  const activeEvents = DB.events.filter(e => e.status !== 'Selesai' && e.status !== 'Dibatalkan').length;
+  const totalRegs = DB.registrations.length;
+  const totalUsers = DB.users.filter(u => u.role === 'member').length;
+  const totalNews = DB.news.length;
+  const totalGallery = DB.gallery.length;
+
+  // Category distribution
+  const catData = DB.categories.map(c => ({
+    nama: c.nama,
+    count: DB.events.filter(e => e.kategori === c.nama).length,
+    icon: c.icon
+  }));
+  const maxCat = Math.max(...catData.map(c => c.count), 1);
+
+  // Prodi distribution
+  const elektroCount = DB.events.filter(e => e.prodi === 'Teknik Elektro').length;
+  const infoCount = DB.events.filter(e => e.prodi === 'Teknik Informatika').length;
+
+  el.innerHTML = `
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card blue"><div class="stat-icon blue">📅</div><div class="stat-num">${totalEvents}</div><div class="stat-label">Total Event</div><div class="stat-change up">↑ ${activeEvents} aktif</div></div>
+      <div class="stat-card green"><div class="stat-icon green">📝</div><div class="stat-num">${totalRegs}</div><div class="stat-label">Total Pendaftar</div><div class="stat-change up">↑ Bertambah</div></div>
+      <div class="stat-card orange"><div class="stat-icon orange">👥</div><div class="stat-num">${totalUsers}</div><div class="stat-label">Mahasiswa</div><div class="stat-change up">↑ Aktif</div></div>
+      <div class="stat-card purple"><div class="stat-icon purple">📰</div><div class="stat-num">${totalNews}</div><div class="stat-label">Total Berita</div><div class="stat-change up">↑ Dipublikasi</div></div>
+      <div class="stat-card red"><div class="stat-icon red">🖼️</div><div class="stat-num">${totalGallery}</div><div class="stat-label">Foto Galeri</div><div class="stat-change up">↑ Dokumentasi</div></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
+      <!-- Event by Category -->
+      <div class="chart-container">
+        <h3>📊 Event per Kategori</h3>
+        <div class="chart-bar-wrap">
+          ${catData.map(c => `
+            <div class="chart-bar-row">
+              <div class="chart-bar-label">${c.icon} ${c.nama}</div>
+              <div class="chart-bar-outer"><div class="chart-bar-inner" style="width:${(c.count/maxCat)*100}%;"></div></div>
+              <div class="chart-bar-val">${c.count}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <!-- Prodi Distribution -->
+      <div class="chart-container">
+        <h3>🎓 Distribusi per Prodi</h3>
+        <div style="display:flex;flex-direction:column;gap:1rem;margin-top:.5rem;">
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:.4rem;font-size:.875rem;">
+              <span>⚡ Teknik Elektro</span><b>${elektroCount} event</b>
+            </div>
+            <div class="progress-bar" style="height:12px;"><div class="progress-fill" style="width:${(elektroCount/totalEvents)*100}%;background:linear-gradient(90deg,var(--blue),var(--electric));"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:.4rem;font-size:.875rem;">
+              <span>💻 Teknik Informatika</span><b>${infoCount} event</b>
+            </div>
+            <div class="progress-bar" style="height:12px;"><div class="progress-fill" style="width:${(infoCount/totalEvents)*100}%;background:linear-gradient(90deg,var(--electric2),var(--electric));"></div></div>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem;">
+          <h4 style="font-size:.85rem;font-weight:700;color:var(--navy);margin-bottom:.75rem;">Status Event</h4>
+          <div style="display:flex;flex-wrap:wrap;gap:.5rem;">
+            ${['Dibuka','Segera','Selesai','Dibatalkan'].map(s => {
+              const cnt = DB.events.filter(e => e.status === s).length;
+              return `<div style="flex:1;min-width:80px;text-align:center;padding:.6rem;background:var(--gray-100);border-radius:8px;">
+                <div style="font-size:1.2rem;font-weight:800;color:var(--navy);">${cnt}</div>
+                <div style="font-size:.7rem;color:var(--gray-600);">${s}</div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Events Table -->
+    <div class="table-card">
+      <div class="table-header">
+        <h3>📋 Event Terbaru</h3>
+        <button class="btn-sm btn-blue" onclick="showAdminSection('events-admin')">Lihat Semua</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Nama Event</th><th>Kategori</th><th>Prodi</th><th>Tanggal</th><th>Peserta</th><th>Status</th></tr></thead>
+          <tbody>
+            ${DB.events.slice(0,5).map((ev,i) => `
+              <tr>
+                <td>${i+1}</td>
+                <td><b>${ev.judul.substring(0,35)}${ev.judul.length>35?'...':''}</b></td>
+                <td><span class="chip">${ev.kategori}</span></td>
+                <td>${ev.prodi === 'Teknik Elektro' ? '⚡ TE' : '💻 TI'}</td>
+                <td>${formatDate(ev.tanggal)}</td>
+                <td><span style="${seatColor(ev.terdaftar,ev.kuota)};font-weight:600;">${ev.terdaftar}/${ev.kuota}</span></td>
+                <td>${statusBadge(ev.status)}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function renderAdminEvents(el) {
+  el.innerHTML = `
+    <div class="table-card">
+      <div class="table-header">
+        <h3>📅 Daftar Event (${DB.events.length})</h3>
+        <button class="btn-sm btn-blue" onclick="openEventModal()">+ Tambah Event</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Poster</th><th>Judul</th><th>Kategori</th><th>Prodi</th><th>Tanggal</th><th>Peserta</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody>
+            ${DB.events.map((ev,i) => `
+              <tr>
+                <td>${i+1}</td>
+                <td>${ev.poster ? `<img src="${ev.poster}" style="width:50px;height:36px;border-radius:6px;object-fit:cover;"/>` : '<span>-</span>'}</td>
+                <td><b style="font-size:.85rem;">${ev.judul.substring(0,30)}${ev.judul.length>30?'...':''}</b></td>
+                <td><span class="chip">${ev.kategori}</span></td>
+                <td>${ev.prodi === 'Teknik Elektro' ? '⚡ TE' : '💻 TI'}</td>
+                <td>${formatDate(ev.tanggal)}</td>
+                <td><span style="${seatColor(ev.terdaftar,ev.kuota)};font-weight:600;">${ev.terdaftar}/${ev.kuota}</span></td>
+                <td>${statusBadge(ev.status)}</td>
+                <td>
+                  <div class="table-actions">
+                    <button class="btn-sm btn-warning-sm" onclick="openEventModal(${ev.id})">✏️</button>
+                    <button class="btn-sm btn-danger-sm" onclick="deleteEvent(${ev.id})">🗑️</button>
+                  </div>
+                </td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function renderAdminCategories(el) {
+  el.innerHTML = `
+    <div class="table-card">
+      <div class="table-header">
+        <h3>🏷️ Kategori Event (${DB.categories.length})</h3>
+        <button class="btn-sm btn-blue" onclick="openCategoryModal()">+ Tambah Kategori</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Icon</th><th>Nama Kategori</th><th>Deskripsi</th><th>Jumlah Event</th><th>Aksi</th></tr></thead>
+          <tbody>
+            ${DB.categories.map((c,i) => `
+              <tr>
+                <td>${i+1}</td>
+                <td style="font-size:1.4rem;">${c.icon}</td>
+                <td><b>${c.nama}</b></td>
+                <td style="font-size:.82rem;color:var(--gray-600);">${c.deskripsi}</td>
+                <td><span class="chip">${DB.events.filter(e=>e.kategori===c.nama).length} event</span></td>
+                <td>
+                  <div class="table-actions">
+                    <button class="btn-sm btn-warning-sm" onclick="openCategoryModal(${c.id})">✏️</button>
+                    <button class="btn-sm btn-danger-sm" onclick="deleteCategory(${c.id})">🗑️</button>
+                  </div>
+                </td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function renderAdminRegistrations(el) {
+  el.innerHTML = `
+    <div class="table-card">
+      <div class="table-header">
+        <h3>📝 Data Peserta Event (${DB.registrations.length})</h3>
+        <span style="font-size:.82rem;color:var(--gray-400);">Total: ${DB.registrations.length} pendaftaran</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Nama Peserta</th><th>NIM</th><th>Prodi</th><th>Event</th><th>Tgl Daftar</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody>
+            ${DB.registrations.map((r,i) => {
+              const user = DB.users.find(u => u.id === r.userId);
+              const ev   = DB.events.find(e => e.id === r.eventId);
+              return user && ev ? `
+                <tr>
+                  <td>${i+1}</td>
+                  <td><b>${user.nama}</b></td>
+                  <td style="font-size:.82rem;color:var(--gray-600);">${user.nim}</td>
+                  <td>${user.prodi === 'Teknik Elektro' ? '⚡ TE' : '💻 TI'}</td>
+                  <td style="font-size:.82rem;">${ev.judul.substring(0,28)}...</td>
+                  <td>${formatDate(r.tglDaftar)}</td>
+                  <td>${statusBadge(r.status)}</td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="btn-sm btn-success-sm" onclick="updateRegStatus(${r.id},'Dikonfirmasi')">✅</button>
+                      <button class="btn-sm btn-warning-sm" onclick="updateRegStatus(${r.id},'Menunggu')">⏳</button>
+                      <button class="btn-sm btn-danger-sm" onclick="deleteReg(${r.id})">🗑️</button>
+                    </div>
+                  </td>
+                </tr>` : '';
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function renderAdminNews(el) {
+  el.innerHTML = `
+    <div class="table-card">
+      <div class="table-header">
+        <h3>📰 Daftar Berita (${DB.news.length})</h3>
+        <button class="btn-sm btn-blue" onclick="openNewsModal()">+ Tambah Berita</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Gambar</th><th>Judul</th><th>Penulis</th><th>Tanggal</th><th>Aksi</th></tr></thead>
+          <tbody>
+            ${DB.news.map((n,i) => `
+              <tr>
+                <td>${i+1}</td>
+                <td><img src="${n.gambar}" style="width:60px;height:40px;border-radius:6px;object-fit:cover;"/></td>
+                <td><b style="font-size:.85rem;">${n.judul.substring(0,35)}...</b></td>
+                <td>${n.penulis}</td>
+                <td>${formatDate(n.tanggal)}</td>
+                <td>
+                  <div class="table-actions">
+                    <button class="btn-sm btn-warning-sm" onclick="openNewsModal(${n.id})">✏️</button>
+                    <button class="btn-sm btn-danger-sm" onclick="deleteNews(${n.id})">🗑️</button>
+                  </div>
+                </td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function renderAdminGallery(el) {
+  el.innerHTML = `
+    <div class="table-header" style="background:white;border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);">
+      <h3>🖼️ Kelola Galeri (${DB.gallery.length})</h3>
+      <button class="btn-sm btn-blue" onclick="openGalleryModal()">+ Upload Foto</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;">
+      ${DB.gallery.map(g => `
+        <div style="background:white;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);">
+          <img src="${g.gambar}" alt="${g.judul}" style="width:100%;height:140px;object-fit:cover;" />
+          <div style="padding:.75rem;">
+            <div style="font-size:.82rem;font-weight:600;color:var(--navy);margin-bottom:.3rem;">${g.judul}</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="chip" style="font-size:.65rem;">${g.kategori}</span>
+              <button class="btn-sm btn-danger-sm" onclick="deleteGallery(${g.id})" style="padding:.2rem .5rem;font-size:.72rem;">🗑️</button>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderAdminUsers(el) {
+  el.innerHTML = `
+    <div class="table-card">
+      <div class="table-header">
+        <h3>👥 Daftar Pengguna (${DB.users.length})</h3>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Nama</th><th>Email</th><th>NIM</th><th>Prodi</th><th>Role</th><th>Event Diikuti</th></tr></thead>
+          <tbody>
+            ${DB.users.map((u,i) => `
+              <tr>
+                <td>${i+1}</td>
+                <td><div style="display:flex;align-items:center;gap:.6rem;"><div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--electric));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:.8rem;">${u.nama.charAt(0)}</div><b>${u.nama}</b></div></td>
+                <td style="font-size:.82rem;color:var(--gray-600);">${u.email}</td>
+                <td>${u.nim}</td>
+                <td>${u.prodi === 'Teknik Elektro' ? '⚡ TE' : '💻 TI'}</td>
+                <td><span class="status-badge ${u.role==='admin'?'status-ongoing':'status-open'}">${u.role === 'admin' ? '👑 Admin' : '👤 Member'}</span></td>
+                <td>${DB.registrations.filter(r=>r.userId===u.id).length} event</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+// =============================================
+//  ADMIN CRUD - EVENTS
+// =============================================
+function openEventModal(id = null) {
+  document.getElementById('eventModalTitle').textContent = id ? 'Edit Event' : 'Tambah Event Baru';
+  document.getElementById('posterPreview').innerHTML = '';
+  if (id) {
+    const ev = DB.events.find(e => e.id === id);
+    if (!ev) return;
+    document.getElementById('eventId').value = ev.id;
+    document.getElementById('eventTitle').value = ev.judul;
+    document.getElementById('eventCategory').value = ev.kategori;
+    document.getElementById('eventProdi').value = ev.prodi;
+    document.getElementById('eventDate').value = ev.tanggal;
+    document.getElementById('eventTime').value = ev.waktu || '08:00';
+    document.getElementById('eventLoc').value = ev.lokasi;
+    document.getElementById('eventQuota').value = ev.kuota;
+    document.getElementById('eventDesc').value = ev.deskripsi;
+    document.getElementById('eventStatus').value = ev.status;
+    if (ev.poster) document.getElementById('posterPreview').innerHTML = `<img src="${ev.poster}" style="width:100%;max-height:120px;object-fit:cover;border-radius:8px;" />`;
+  } else {
+    document.getElementById('eventId').value = '';
+    document.getElementById('eventTitle').value = '';
+    document.getElementById('eventDate').value = '';
+    document.getElementById('eventTime').value = '08:00';
+    document.getElementById('eventLoc').value = '';
+    document.getElementById('eventQuota').value = '';
+    document.getElementById('eventDesc').value = '';
+    document.getElementById('eventStatus').value = 'Dibuka';
+  }
+  openModal('eventModal');
+}
+
+function previewPoster(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('posterPreview').innerHTML = `<img src="${e.target.result}" style="width:100%;max-height:120px;object-fit:cover;border-radius:8px;margin-top:.5rem;" />`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveEvent() {
+  const id     = document.getElementById('eventId').value;
+  const judul  = document.getElementById('eventTitle').value.trim();
+  const kat    = document.getElementById('eventCategory').value;
+  const prodi  = document.getElementById('eventProdi').value;
+  const date   = document.getElementById('eventDate').value;
+  const time   = document.getElementById('eventTime').value;
+  const loc    = document.getElementById('eventLoc').value.trim();
+  const quota  = parseInt(document.getElementById('eventQuota').value);
+  const desc   = document.getElementById('eventDesc').value.trim();
+  const status = document.getElementById('eventStatus').value;
+  if (!judul || !date || !loc || !quota || !desc) { showToast('error', '⚠️ Semua field wajib diisi!'); return; }
+
+  if (id) {
+    const idx = DB.events.findIndex(e => e.id === parseInt(id));
+    if (idx >= 0) {
+      DB.events[idx] = { ...DB.events[idx], judul, kategori:kat, prodi, tanggal:date, waktu:time, lokasi:loc, kuota:quota, deskripsi:desc, status };
+      showToast('success', '✅ Event berhasil diperbarui!');
+    }
+  } else {
+    DB.events.push({ id: DB.events.length + 1, judul, kategori:kat, prodi, tanggal:date, waktu:time, lokasi:loc, kuota:quota, terdaftar:0, deskripsi:desc, status, poster:'' });
+    showToast('success', '✅ Event baru berhasil ditambahkan!');
+  }
+  closeModal('eventModal');
+  renderAdminEvents(document.getElementById('adminContent'));
+}
+
+function deleteEvent(id) {
+  const ev = DB.events.find(e => e.id === id);
+  showConfirm(`Hapus event "${ev.judul}"? Data pendaftaran terkait juga akan dihapus.`, () => {
+    DB.events = DB.events.filter(e => e.id !== id);
+    DB.registrations = DB.registrations.filter(r => r.eventId !== id);
+    showToast('success', '✅ Event berhasil dihapus!');
+    renderAdminEvents(document.getElementById('adminContent'));
+  });
+}
+
+// =============================================
+//  ADMIN CRUD - CATEGORIES
+// =============================================
+function openCategoryModal(id = null) {
+  document.getElementById('categoryModalTitle').textContent = id ? 'Edit Kategori' : 'Tambah Kategori';
+  if (id) {
+    const c = DB.categories.find(x => x.id === id);
+    document.getElementById('catId').value = c.id;
+    document.getElementById('catName').value = c.nama;
+    document.getElementById('catIcon').value = c.icon;
+    document.getElementById('catDesc').value = c.deskripsi;
+  } else {
+    document.getElementById('catId').value = '';
+    document.getElementById('catName').value = '';
+    document.getElementById('catIcon').value = '';
+    document.getElementById('catDesc').value = '';
+  }
+  openModal('categoryModal');
+}
+
+function saveCategory() {
+  const id   = document.getElementById('catId').value;
+  const nama = document.getElementById('catName').value.trim();
+  const icon = document.getElementById('catIcon').value.trim() || '🏷️';
+  const desc = document.getElementById('catDesc').value.trim();
+  if (!nama) { showToast('error', '⚠️ Nama kategori wajib diisi!'); return; }
+  if (id) {
+    const idx = DB.categories.findIndex(c => c.id === parseInt(id));
+    if (idx >= 0) DB.categories[idx] = { ...DB.categories[idx], nama, icon, deskripsi:desc };
+    showToast('success', '✅ Kategori diperbarui!');
+  } else {
+    DB.categories.push({ id: DB.categories.length + 1, nama, icon, deskripsi:desc });
+    showToast('success', '✅ Kategori ditambahkan!');
+  }
+  closeModal('categoryModal');
+  renderAdminCategories(document.getElementById('adminContent'));
+}
+
+function deleteCategory(id) {
+  const c = DB.categories.find(x => x.id === id);
+  showConfirm(`Hapus kategori "${c.nama}"?`, () => {
+    DB.categories = DB.categories.filter(x => x.id !== id);
+    showToast('success', '✅ Kategori dihapus!');
+    renderAdminCategories(document.getElementById('adminContent'));
+  });
+}
+
+// =============================================
+//  ADMIN CRUD - REGISTRATIONS
+// =============================================
+function updateRegStatus(id, status) {
+  const idx = DB.registrations.findIndex(r => r.id === id);
+  if (idx >= 0) { DB.registrations[idx].status = status; showToast('success', `✅ Status peserta diubah ke "${status}"`); renderAdminRegistrations(document.getElementById('adminContent')); }
+}
+function deleteReg(id) {
+  showConfirm('Hapus data pendaftaran ini?', () => {
+    DB.registrations = DB.registrations.filter(r => r.id !== id);
+    showToast('success', '✅ Data pendaftaran dihapus!');
+    renderAdminRegistrations(document.getElementById('adminContent'));
+  });
+}
+
+// =============================================
+//  ADMIN CRUD - NEWS
+// =============================================
+function openNewsModal(id = null) {
+  document.getElementById('newsModalTitle').textContent = id ? 'Edit Berita' : 'Tambah Berita';
+  if (id) {
+    const n = DB.news.find(x => x.id === id);
+    document.getElementById('newsId').value = n.id;
+    document.getElementById('newsTitle').value = n.judul;
+    document.getElementById('newsContent').value = n.konten;
+    document.getElementById('newsImage').value = n.gambar;
+  } else {
+    document.getElementById('newsId').value = '';
+    document.getElementById('newsTitle').value = '';
+    document.getElementById('newsContent').value = '';
+    document.getElementById('newsImage').value = '';
+  }
+  openModal('newsModal');
+}
+
+function saveNews() {
+  const id      = document.getElementById('newsId').value;
+  const judul   = document.getElementById('newsTitle').value.trim();
+  const konten  = document.getElementById('newsContent').value.trim();
+  const gambar  = document.getElementById('newsImage').value.trim();
+  if (!judul || !konten) { showToast('error', '⚠️ Judul dan konten wajib diisi!'); return; }
+  if (id) {
+    const idx = DB.news.findIndex(n => n.id === parseInt(id));
+    if (idx >= 0) DB.news[idx] = { ...DB.news[idx], judul, konten, gambar };
+    showToast('success', '✅ Berita diperbarui!');
+  } else {
+    DB.news.unshift({ id: DB.news.length + 1, judul, konten, gambar: gambar || 'https://images.pexels.com/photos/19199658/pexels-photo-19199658.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600', penulis: currentUser?.nama || 'Admin', tanggal: new Date().toISOString().split('T')[0] });
+    showToast('success', '✅ Berita ditambahkan!');
+  }
+  closeModal('newsModal');
+  renderAdminNews(document.getElementById('adminContent'));
+}
+
+function deleteNews(id) {
+  const n = DB.news.find(x => x.id === id);
+  showConfirm(`Hapus berita "${n.judul}"?`, () => {
+    DB.news = DB.news.filter(x => x.id !== id);
+    showToast('success', '✅ Berita dihapus!');
+    renderAdminNews(document.getElementById('adminContent'));
+  });
+}
+
+// =============================================
+//  ADMIN CRUD - GALLERY
+// =============================================
+function openGalleryModal() {
+  document.getElementById('galId').value = '';
+  document.getElementById('galTitle').value = '';
+  document.getElementById('galImage').value = '';
+  openModal('galleryModal');
+}
+
+function saveGallery() {
+  const judul  = document.getElementById('galTitle').value.trim();
+  const kat    = document.getElementById('galCategory').value;
+  const gambar = document.getElementById('galImage').value.trim();
+  if (!judul) { showToast('error', '⚠️ Judul foto wajib diisi!'); return; }
+  DB.gallery.push({ id: DB.gallery.length + 1, judul, gambar: gambar || 'https://images.pexels.com/photos/35335985/pexels-photo-35335985.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=400&w=600', kategori: kat });
+  showToast('success', '✅ Foto galeri ditambahkan!');
+  closeModal('galleryModal');
+  renderAdminGallery(document.getElementById('adminContent'));
+}
+
+function deleteGallery(id) {
+  showConfirm('Hapus foto ini dari galeri?', () => {
+    DB.gallery = DB.gallery.filter(g => g.id !== id);
+    showToast('success', '✅ Foto dihapus!');
+    renderAdminGallery(document.getElementById('adminContent'));
+  });
+}
+
+// =============================================
+//  SCROLL ANIMATIONS
+// =============================================
+function initScrollAnimations() {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+}
+
+// =============================================
+//  INIT
+// =============================================
+document.addEventListener('DOMContentLoaded', () => {
+  navigate('home');
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.add('hidden'); });
+  });
+});
+</script>
+</body>
+</html>
